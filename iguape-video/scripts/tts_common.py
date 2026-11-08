@@ -26,7 +26,18 @@ def load_env():
             if line.strip() and not line.startswith("#") and "=" in line:
                 k, v = line.split("=", 1)
                 os.environ.setdefault(k.strip(), v.strip())
+    eleven = os.environ.get("TTS_PROVIDER") == "elevenlabs"
+    if eleven:
+        return {
+            "eleven": True,
+            "model": os.environ.get("ELEVENLABS_MODEL", "eleven_multilingual_v2"),
+            "voice": os.environ.get("ELEVENLABS_VOICE_ID", ""),
+            "budget": int(os.environ.get("ELEVENLABS_CHAR_BUDGET", "9900")),
+            "rpm": 20, "rpd": 10**6,
+            "has_key": bool(os.environ.get("ELEVENLABS_API_KEY")),
+        }
     return {
+        "eleven": False,
         "model": os.environ.get("GEMINI_TTS_MODEL", "gemini-3.8-flash-tts"),
         "voice": os.environ.get("GEMINI_VOICE", "Kore"),
         "rpm": int(os.environ.get("GEMINI_RPM", "3")),
@@ -47,7 +58,7 @@ def load_script():
     return json.loads((ROOT / "src/data/script.json").read_text())["scenes"]
 
 
-def make_blocks():
+def make_blocks(sep=None):
     """Agrupa parágrafos da mesma cena em blocos de ~800-1100 caracteres."""
     blocks = []
     for sc in load_script():
@@ -75,7 +86,7 @@ def make_blocks():
             "scene": sid,
             "firstParagraph": s,
             "paragraphs": paras,
-            "text": f"\n\n{PAUSE}\n\n".join(pronuncia(p) for p in paras),
+            "text": (sep if sep is not None else f"\n\n{PAUSE}\n\n").join(pronuncia(p) for p in paras),
             "style": STYLE_TENSE if sid in TENSE_SCENES else STYLE,
         })
     return out

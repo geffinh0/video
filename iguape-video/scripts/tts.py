@@ -14,7 +14,9 @@ def main():
         sys.exit("GEMINI_API_KEY ausente. Copie .env.example para .env e preencha.")
     raw = ROOT / "public/audio/raw"
     raw.mkdir(parents=True, exist_ok=True)
-    blocks = make_blocks()
+    if cfg.get("eleven") and not cfg["voice"]:
+        sys.exit("Defina ELEVENLABS_VOICE_ID no .env (ID da voz Bia).")
+    blocks = make_blocks("\n\n" if cfg.get("eleven") else None)
     (ROOT / "src/data/blocks.json").write_text(json.dumps(blocks, indent=2, ensure_ascii=False))
     lim = Limiter(cfg)
     pending = 0
@@ -24,6 +26,11 @@ def main():
         if f.exists() and lim.state["done"].get(b["id"]) == h:
             continue
         pending += 1
+        if cfg.get("eleven"):
+            used = lim.state.get("chars", 77)  # 77 já gastos no teste inicial
+            if used + len(b["text"]) > cfg["budget"]:
+                print(f"orçamento de caracteres esgotado ({used}/{cfg['budget']}); faltam blocos. Aumente o plano ou o orçamento.")
+                return
         print(f"[{b['id']}] cena {b['scene']} ({len(b['text'])} chars)", flush=True)
         try:
             wav = call_with_retry(lim, tts_provider.synthesize, b["text"], cfg["voice"], b["style"], cfg["model"])
@@ -31,6 +38,8 @@ def main():
             print(LIMIT_MSG)
             return
         f.write_bytes(wav)
+        if cfg.get("eleven"):
+            lim.state["chars"] = lim.state.get("chars", 77) + len(b["text"])
         lim.state["done"][b["id"]] = h
         save_state(lim.state)
     print("Todos os blocos prontos. Rode `npm run align`." if not pending or True else "")

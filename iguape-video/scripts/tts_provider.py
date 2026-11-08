@@ -26,7 +26,34 @@ def _wrap_pcm(pcm: bytes) -> bytes:
     return buf.getvalue()
 
 
+def synthesize_elevenlabs(text: str, voice_id: str, model: str) -> bytes:
+    import json
+    import subprocess
+    import urllib.error
+    import urllib.request
+
+    req = urllib.request.Request(
+        f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}?output_format=mp3_44100_128",
+        data=json.dumps({"text": text, "model_id": model, "language_code": "pt"}).encode(),
+        headers={"xi-api-key": os.environ["ELEVENLABS_API_KEY"], "Content-Type": "application/json"},
+    )
+    try:
+        mp3 = urllib.request.urlopen(req, timeout=120).read()
+    except urllib.error.HTTPError as e:
+        body = e.read().decode()[:300]
+        if e.code in (401, 402, 429) or "quota" in body:
+            raise QuotaError(f"{e.code}: {body}") from None
+        if e.code >= 500:
+            raise TransientError(f"{e.code}: {body}") from None
+        raise RuntimeError(f"{e.code}: {body}") from None
+    r = subprocess.run(["ffmpeg", "-loglevel", "error", "-i", "pipe:0", "-ar", "24000", "-ac", "1", "-f", "wav", "pipe:1"],
+                       input=mp3, capture_output=True, check=True)
+    return r.stdout
+
+
 def synthesize(text: str, voice: str, style: str, model: str) -> bytes:
+    if os.environ.get("TTS_PROVIDER") == "elevenlabs":
+        return synthesize_elevenlabs(text, voice, model)
     from google import genai
 
     # A chave é passada explicitamente; nunca é impressa nem registrada.
