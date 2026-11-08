@@ -6,4 +6,4 @@
 - [x] Cenas 1–10, legendas, transições (folha de papel), tela final com fontes
 - [x] Thumbnail (`out/thumbnail.png`)
 - [x] `out/descricao.txt`, `out/creditos-imagens.txt`, `ASSETS_NEEDED.md`
-- [ ] Render final `out/guerra-de-iguape.mp4` (`npm run render`; ~18.094 frames)
+- [x] Render final `out/guerra-de-iguape.mp4` (603 s, 1080p30, 202 MB)
