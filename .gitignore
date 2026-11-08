@@ -1,0 +1,8 @@
+node_modules/
+.env
+out/
+*.log
+__pycache__/
+.venv/
+iguape-video/node_modules/
+iguape-video/out/
