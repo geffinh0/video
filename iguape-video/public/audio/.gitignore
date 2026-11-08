@@ -1,2 +1,1 @@
-*.wav
-!public/audio/raw/*.wav
+/*.wav
