@@ -41,7 +41,7 @@ def synthesize_elevenlabs(text: str, voice_id: str, model: str) -> bytes:
         mp3 = urllib.request.urlopen(req, timeout=120).read()
     except urllib.error.HTTPError as e:
         body = e.read().decode()[:300]
-        if e.code in (401, 402, 429) or "quota" in body:
+        if e.code == 429 or "quota_exceeded" in body:
             raise QuotaError(f"{e.code}: {body}") from None
         if e.code >= 500:
             raise TransientError(f"{e.code}: {body}") from None
