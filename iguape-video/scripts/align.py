@@ -46,6 +46,27 @@ def proportional(paras, total):
     return res
 
 
+def by_silence(wav, paras, total):
+    """Ancora cada fronteira de parágrafo na pausa de fala mais próxima da posição proporcional."""
+    sil = [((a + b) / 2, a, b) for a, b in silences(wav) if a > 0.2 and b < total - 0.1]
+    prop = proportional(paras, total)
+    bounds, last = [], 0.0
+    for i in range(len(paras) - 1):
+        target = prop[i][1]
+        cand = [x for x in sil if x[0] > last + 0.5 and abs(x[0] - target) < max(1.5, total * 0.06)]
+        if not cand:
+            return None
+        mid, a, b = min(cand, key=lambda x: abs(x[0] - target))
+        bounds.append((a, b))
+        last = mid
+    spans, start = [], 0.0
+    for i in range(len(paras)):
+        end = bounds[i][0] if i < len(bounds) else total
+        spans.append((start, end))
+        start = bounds[i][1] if i < len(bounds) else total
+    return spans
+
+
 def align_block(wav, paras):
     total = dur(wav)
     try:
@@ -73,7 +94,11 @@ def align_block(wav, paras):
         if any(s is None for s in spans):
             method = "proporcional"
     if not words or any(s is None for s in spans):
-        spans = proportional(paras, total)
+        sp = by_silence(wav, paras, total)
+        if sp:
+            spans, method = sp, "silêncio (ffmpeg)"
+        else:
+            spans, method = proportional(paras, total), "proporcional"
     return total, spans, method
 
 

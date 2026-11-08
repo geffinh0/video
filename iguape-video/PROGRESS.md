@@ -2,7 +2,8 @@
 
 - [x] Scaffold Remotion (TS) em `iguape-video/`, `@remotion/google-fonts`
 - [x] Dados: `src/data/script.json`, `pronuncia.json`, `durations.estimated.json`
-- [x] Scripts: `tts:test`, `tts`, `align`, `estimate` (escritos; `tts:test` bloqueado, ver DECISIONS.md #5)
+- [x] Scripts: tts:test, tts, align, estimate
+- [x] Narração gerada (Sarah, ElevenLabs) e alinhada (aprox.), 9,9 min
 - [ ] Texturas de papel (PNG)
 - [ ] Kit de recortes (`src/cutout/`), `Puppet`, `Playground`
 - [ ] Cenas 1–10

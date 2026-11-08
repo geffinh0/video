@@ -34,7 +34,7 @@ def synthesize_elevenlabs(text: str, voice_id: str, model: str) -> bytes:
 
     req = urllib.request.Request(
         f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}?output_format=mp3_44100_128",
-        data=json.dumps({"text": text, "model_id": model, "language_code": "pt"}).encode(),
+        data=json.dumps({"text": text, "model_id": model, "language_code": "pt", "voice_settings": {"stability": float(os.environ.get("ELEVENLABS_STABILITY", "0.55")), "similarity_boost": 0.8, "style": float(os.environ.get("ELEVENLABS_STYLE", "0.15")), "use_speaker_boost": True, "speed": float(os.environ.get("ELEVENLABS_SPEED", "0.95"))}}).encode(),
         headers={"xi-api-key": os.environ["ELEVENLABS_API_KEY"], "Content-Type": "application/json"},
     )
     try:
