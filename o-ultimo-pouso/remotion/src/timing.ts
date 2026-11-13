@@ -1,7 +1,7 @@
 import data from './data/shots.json';
 
-export const FPS = 24;
-export const LAYER_FPS = 12;
+export const FPS = 30;
+export const LAYER_FPS = 30;
 export type Shot = {
 	id: string; seq: number; dur: number; set: string; desc: string;
 	lines?: [string, number][]; sfx?: [string, number, number][];

@@ -1,5 +1,6 @@
 import React from 'react';
 import {AbsoluteFill, Img, random, staticFile, useCurrentFrame} from 'remotion';
+import {LAYER_FPS} from './timing';
 
 /** Chuva em linhas finas (determinística). */
 export const Rain: React.FC<{density?: number; opacity?: number; angle?: number; speed?: number}> = ({density = 220, opacity = 0.22, angle = 8, speed = 70}) => {
@@ -55,6 +56,6 @@ export const flicker = (f: number, amt = 0.05) => 1 + amt * (Math.sin(f * 0.9) *
 
 export const Layer: React.FC<{id: string; count: number; t: number}> = ({id, count, t}) => {
 	if (!count) return null;
-	const idx = Math.min(count - 1, Math.max(0, Math.floor(t * 12)));
+	const idx = Math.min(count - 1, Math.max(0, Math.floor(t * LAYER_FPS)));
 	return <Img src={staticFile(`scenes/${id}/layer/${String(idx).padStart(4, '0')}.png`)} style={{position: 'absolute', inset: 0, width: '100%', height: '100%'}} />;
 };

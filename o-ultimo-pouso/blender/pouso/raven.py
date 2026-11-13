@@ -147,7 +147,7 @@ def head_moves(rv, fps, dur, seed=0, start=0.0, calm=1.0):
 def speak(rv, fps, at, length, opens=None):
     """Abre e fecha o bico durante a fala."""
     j = rv["jaw"]; f0 = int(at * fps)
-    key(j, f0 - 2, rot=(0, 0, 0))
+    key(j, max(0, f0 - int(0.17 * fps)), rot=(0, 0, 0))
     k = 0; t = 0.0
     while t < length:
         a = math.radians(14 if k % 2 == 0 else 3); t += 0.11 if k % 2 == 0 else 0.13
@@ -166,7 +166,7 @@ def spread_wings(rv, fps, at, dur=0.6, hold=None):
 def flap(rv, fps, at, n=6, period=0.22):
     f = int(at * fps)
     for sx, w in zip((-1, 1), rv["wings"]):
-        w.rotation_euler = WING_REST(sx); w.keyframe_insert("rotation_euler", frame=max(0, f - 2))
+        w.rotation_euler = WING_REST(sx); w.keyframe_insert("rotation_euler", frame=max(0, f - int(0.17 * fps)))
     for k in range(n):
         for sx, w in zip((-1, 1), rv["wings"]):
             key(w, f + int(k * period * fps), rot=(0, math.radians(-sx * 55), math.radians(sx * 95)))

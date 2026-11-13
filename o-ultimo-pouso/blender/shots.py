@@ -1,7 +1,7 @@
 """Definição dos planos (cenário, câmera, personagens, animação) e render.
 Uso: python3 blender/shots.py <shot> <plate|layer|preview> [samples]
 - plate:   fundo estático, alta qualidade, sem personagens animados  -> renders/scenes/<id>/plate.png
-- layer:   personagens/objetos animados, fundo transparente, 12 fps, cenário como holdout -> renders/scenes/<id>/layer/####.png
+- layer:   personagens/objetos animados, fundo transparente, 30 fps, cenário como holdout -> renders/scenes/<id>/layer/####.png
 - preview: tudo junto, baixa resolução, no meio do plano -> renders/preview/<id>.png"""
 import sys, os, math, json, time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -14,7 +14,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEX = f"{ROOT}/assets/textures"
 SHOTS = {s["id"]: s for s in json.load(open(f"{ROOT}/roteiro/shots.json"))["shots"]}
 VO = json.load(open(f"{ROOT}/assets/audio/voices/durations.json"))
-FPS = 12
+FPS = 30
 R = math.radians
 
 def line_at(shot, lid):
@@ -332,7 +332,7 @@ def main():
                 if o.type == "LIGHT" and o.name.startswith(("candle_light", "clock_fill", "sconce_l")): o.hide_render = True
         for v in ("fog_volume", "window_glass"):
             if v in bpy.data.objects: bpy.data.objects[v].hide_render = True
-        quality(samples or 12, True, transparent=True, res=0.5)
+        quality(samples or 12, True, transparent=True, res=0.5); sc.render.use_persistent_data = True
         os.makedirs(f"{out}/layer", exist_ok=True)
         n = int(dur * FPS)
         start = int(sys.argv[4]) if len(sys.argv) > 4 else 0
