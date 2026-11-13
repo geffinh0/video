@@ -64,10 +64,50 @@ def _fuzz(o, mtl_hair, count=2500, length=0.012):
     ps.child_length = 1.0; ps.clump_factor = 0.6; ps.roughness_1 = 0.002
     o.data.materials.append(mtl_hair); ps.material = len(o.data.materials)
 
+def _plumage(o, mtl, count, size, seed=1, lay=(0.0, -1.0, -0.25), rand=0.25, lift=0.22):
+    """Cobre a malha com penas de contorno sobrepostas, deitadas na direção `lay` (espaço do pai).
+    Gera uma malha única (rápida de renderizar), filha do mesmo pivô de `o`."""
+    import random as Rn
+    r = Rn.Random(seed)
+    bpy.context.view_layer.update()
+    dg = bpy.context.evaluated_depsgraph_get(); eo = o.evaluated_get(dg); me = eo.to_mesh()
+    M = o.matrix_local.copy(); me.calc_loop_triangles()
+    tris = []; acc = 0.0
+    for t in me.loop_triangles:
+        ps = [M @ me.vertices[i].co for i in t.vertices]
+        ar = ((ps[1] - ps[0]).cross(ps[2] - ps[0])).length * 0.5
+        if ar > 1e-10: acc += ar; tris.append((acc, ps))
+    eo.to_mesh_clear()
+    layv = Vector(lay).normalized(); verts = []; faces = []
+    P = [(0.0, 0.10), (0.3, 0.44), (0.65, 0.5), (0.9, 0.3), (1.0, 0.02)]
+    import bisect
+    keys = [t[0] for t in tris]
+    for _ in range(count):
+        ps = tris[min(len(tris) - 1, bisect.bisect(keys, r.random() * acc))][1]
+        u, v = r.random(), r.random()
+        if u + v > 1: u, v = 1 - u, 1 - v
+        p = ps[0] + (ps[1] - ps[0]) * u + (ps[2] - ps[0]) * v
+        n = (ps[1] - ps[0]).cross(ps[2] - ps[0]).normalized()
+        d = layv - n * layv.dot(n)
+        if d.length < 0.15: continue
+        d.normalize(); sd = n.cross(d).normalized()
+        d = (d + sd * r.uniform(-0.18, 0.18)).normalized(); sd = n.cross(d).normalized()
+        L = size * (1 + r.uniform(-rand, rand)); W = L * 0.52; k = len(verts)
+        for x, w in P:
+            c0 = p + d * (x * L) + n * (0.0012 + lift * L * math.sin(x * 2.2) * 0.55)
+            verts += [c0 - sd * (w * W) - n * (w * W * 0.25), c0 + n * (0.004 * L / 0.04), c0 + sd * (w * W) - n * (w * W * 0.25)]
+        for i in range(len(P) - 1):
+            a = k + i * 3; faces += [(a, a + 3, a + 4, a + 1), (a + 1, a + 4, a + 5, a + 2)]
+    fm = bpy.data.meshes.new(o.name + "_plumage"); fm.from_pydata([tuple(v) for v in verts], [], faces); fm.update()
+    for pl in fm.polygons: pl.use_smooth = True
+    fm.materials.append(mtl)
+    fo = bpy.data.objects.new(o.name + "_plumage", fm); o.users_collection[0].objects.link(fo); fo.parent = o.parent
+    return fo
+
 def build(loc=(0, 0, 0), rot_z=0.0, scale=1.0, name="raven", coll_name="raven", fuzz=False):
     """Corvo pousado: pés em z=0, frente em +y. ~45 cm de altura em pé."""
     c = coll(coll_name)
-    fe = mat_feather(); beak = mat("raven_beak", (0.012, 0.012, 0.014), 0.2, coat=0.6)
+    fe = mat_feather(); beak = mat("raven_beak", (0.01, 0.01, 0.012), 0.38, coat=0.25)
     eye = mat("raven_eye", (0.002, 0.0015, 0.0015), 0.02, coat=1.0)
     leg = mat("raven_leg", (0.008, 0.008, 0.008), 0.55)
     hair = bpy.data.materials.get("raven_hair") or mat("raven_hair", (0.004, 0.004, 0.006), 0.45, coat=0.2)
@@ -108,10 +148,22 @@ def build(loc=(0, 0, 0), rot_z=0.0, scale=1.0, name="raven", coll_name="raven", 
     tl = empty(name + "_tail", (0, -0.15, 0.09), (math.radians(-28), 0, 0), parent=root, coll=c)
     _feather_fan(name + "_tailfan", 9, 0.19, 24, 0.028, fe, c, tl, plane="XY")
     for sx in (-1, 1):
-        cyl(f"{name}_leg{sx}", 0.0065, 0.08, (sx * 0.028, 0.0, 0.04), leg, parent=root, coll=c)
-        for a in (-25, 0, 25):
-            cyl(f"{name}_toe{sx}{a}", 0.0045, 0.05, (sx * 0.028 + math.sin(math.radians(a)) * 0.022, 0.022, 0.004), leg, rot=(math.radians(-90), 0, math.radians(-a)), parent=root, coll=c)
-        cyl(f"{name}_hind{sx}", 0.0045, 0.035, (sx * 0.028, -0.018, 0.004), leg, rot=(math.radians(90), 0, 0), parent=root, coll=c)
+        x = sx * 0.03; V = [(x, -0.02, 0.10), (x, -0.012, 0.062), (x, 0.004, 0.013)]; E = [(0, 1), (1, 2)]; Rr = [(0.017, 0.015), (0.0075, 0.0075), (0.0058, 0.0058)]
+        for a in (-30, 0, 30):
+            sa, ca = math.sin(math.radians(a)), math.cos(math.radians(a)); k = len(V)
+            V += [(x + sa * 0.026, 0.004 + ca * 0.026, 0.0065), (x + sa * 0.05, 0.004 + ca * 0.05, 0.0055), (x + sa * 0.064, 0.004 + ca * 0.064, 0.0005)]
+            E += [(2, k), (k, k + 1), (k + 1, k + 2)]; Rr += [(0.0048, 0.0042), (0.0038, 0.0034), (0.0008, 0.0008)]
+        k = len(V); V += [(x, -0.02, 0.006), (x, -0.036, 0.0005)]; E += [(2, k), (k, k + 1)]; Rr += [(0.0042, 0.0038), (0.0008, 0.0008)]
+        lg = _skin_body(f"{name}_leg{sx}", V, E, Rr, leg, c); lg.parent = root
+        th = sphere(f"{name}_thigh{sx}", 0.026, (x, -0.022, 0.098), fe, scale=(0.85, 1.0, 1.45), parent=root, coll=c)
+        _plumage(th, fe, 120, 0.03, seed=7 + sx, lay=(0.0, -0.3, -1.0))
+    _plumage(body, fe, 2400, 0.036, seed=1, lift=0.12)
+    _plumage(head, fe, 900, 0.016, seed=2, lay=(0.0, -1.0, -0.1), lift=0.10)
+    for w in wings:
+        cv = [ch for ch in w.children if "wingcov" in ch.name][0]
+        _plumage(cv, fe, 420, 0.05, seed=4, lay=(0.0, -1.0, -0.15), rand=0.35, lift=0.08)
+    # penas eriçadas da garganta
+    hk = _feather_fan(name + "_hackles", 7, 0.05, 70, 0.014, fe, c, neck, plane="XY", droop=0.9); hk.location = (0, 0.035, 0.012)
     return dict(root=root, neck=neck, jaw=jaw, wings=wings, tail=tl)
 
 def rest_pose(rv):
