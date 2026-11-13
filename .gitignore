@@ -6,3 +6,7 @@ __pycache__/
 .venv/
 iguape-video/node_modules/
 iguape-video/out/
+o-ultimo-pouso/assets/voices/models/
+o-ultimo-pouso/renders/
+o-ultimo-pouso/remotion/node_modules/
+o-ultimo-pouso/remotion/out/

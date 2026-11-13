@@ -1,0 +1,185 @@
+{
+  "_vozes": {
+    "N": "pm_santa",
+    "A": "pm_alex",
+    "E": "pf_dora",
+    "C": "pm_santa (processada: grave e rouca)"
+  },
+  "lines": [
+    {
+      "id": "N1",
+      "who": "N",
+      "text": "Há casas que guardam lembranças."
+    },
+    {
+      "id": "N2",
+      "who": "N",
+      "text": "Outras... guardam segredos."
+    },
+    {
+      "id": "N3",
+      "who": "N",
+      "text": "E existem aquelas que, depois de algum tempo, parecem aprender a respirar junto com os mortos."
+    },
+    {
+      "id": "A1",
+      "who": "A",
+      "text": "Mais uma noite, Eleanor."
+    },
+    {
+      "id": "A2",
+      "who": "A",
+      "text": "Mais uma noite sem respostas."
+    },
+    {
+      "id": "A3",
+      "who": "A",
+      "text": "Você dizia que o silêncio era uma coisa bonita..."
+    },
+    {
+      "id": "A4",
+      "who": "A",
+      "text": "Eu nunca consegui entender por quê."
+    },
+    {
+      "id": "A5",
+      "who": "A",
+      "text": "Outra vez você?"
+    },
+    {
+      "id": "A6",
+      "who": "A",
+      "text": "O que quer de mim?"
+    },
+    {
+      "id": "C1",
+      "who": "C",
+      "text": "Arthur..."
+    },
+    {
+      "id": "A7",
+      "who": "A",
+      "text": "Não..."
+    },
+    {
+      "id": "C2",
+      "who": "C",
+      "text": "Ela... espera."
+    },
+    {
+      "id": "E1",
+      "who": "E",
+      "text": "Meu querido Arthur..."
+    },
+    {
+      "id": "E2",
+      "who": "E",
+      "text": "Se estiver lendo estas palavras, significa que ele encontrou novamente o caminho até você."
+    },
+    {
+      "id": "E3",
+      "who": "E",
+      "text": "Não olhe para trás quando ouvir três batidas."
+    },
+    {
+      "id": "E4",
+      "who": "E",
+      "text": "Não abra a porta, mesmo que escute minha voz."
+    },
+    {
+      "id": "E5",
+      "who": "E",
+      "text": "E, acima de tudo..."
+    },
+    {
+      "id": "E6",
+      "who": "E",
+      "text": "Não acredite naquilo que você se lembra daquela noite."
+    },
+    {
+      "id": "A8",
+      "who": "A",
+      "text": "O que aconteceu naquela noite?"
+    },
+    {
+      "id": "E7",
+      "who": "E",
+      "fx": "distante",
+      "text": "Você prometeu que não abriria, Arthur."
+    },
+    {
+      "id": "E8",
+      "who": "E",
+      "fx": "memoria",
+      "text": "Arthur... abra a porta."
+    },
+    {
+      "id": "A9",
+      "who": "A",
+      "text": "Eu não me lembro..."
+    },
+    {
+      "id": "E9",
+      "who": "E",
+      "fx": "porta",
+      "text": "Você me deixou esperando."
+    },
+    {
+      "id": "A10",
+      "who": "A",
+      "text": "Não..."
+    },
+    {
+      "id": "E10",
+      "who": "E",
+      "fx": "porta",
+      "text": "Você prometeu."
+    },
+    {
+      "id": "A11",
+      "who": "A",
+      "text": "O que aconteceu com ela?"
+    },
+    {
+      "id": "A12",
+      "who": "A",
+      "text": "Foi você?"
+    },
+    {
+      "id": "C3",
+      "who": "C",
+      "text": "Você abriu."
+    },
+    {
+      "id": "A13",
+      "who": "A",
+      "text": "Eu... não..."
+    },
+    {
+      "id": "C4",
+      "who": "C",
+      "text": "Lembre-se."
+    },
+    {
+      "id": "N4",
+      "who": "N",
+      "text": "Dizem que os mortos nunca voltam."
+    },
+    {
+      "id": "N5",
+      "who": "N",
+      "text": "Talvez seja verdade."
+    },
+    {
+      "id": "N6",
+      "who": "N",
+      "text": "Talvez sejam apenas os vivos que nunca conseguem partir."
+    },
+    {
+      "id": "C5",
+      "who": "C",
+      "text": "Eleanor...",
+      "say": "Élenor..."
+    }
+  ]
+}
