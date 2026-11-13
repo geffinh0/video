@@ -1,5 +1,5 @@
 {
- "fps": 24,
+ "fps": 30,
  "_doc": "Fonte da verdade do filme. dur em segundos. lines: [id_fala, inicio_s]. sfx: [nome, inicio_s, volume]. move: movimento de câmera na pós (zoom de/até, pan x/y). layers: camadas animadas renderizadas com fundo transparente.",
  "shots": [
   {

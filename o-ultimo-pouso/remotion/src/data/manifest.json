@@ -1,10 +1,10 @@
 {
  "ins_candle": {
-  "plate": false,
+  "plate": true,
   "layer": 0
  },
  "ins_glass": {
-  "plate": false,
+  "plate": true,
   "layer": 0
  },
  "ins_hand": {
@@ -12,11 +12,11 @@
   "layer": 0
  },
  "ins_key": {
-  "plate": false,
+  "plate": true,
   "layer": 0
  },
  "ins_shadow": {
-  "plate": false,
+  "plate": true,
   "layer": 0
  },
  "s02": {
@@ -28,115 +28,119 @@
   "layer": 0
  },
  "s04": {
-  "plate": false,
-  "layer": 0
+  "plate": true,
+  "layer": 300
  },
  "s05": {
-  "plate": false,
+  "plate": true,
   "layer": 0
  },
  "s06": {
-  "plate": false,
-  "layer": 0
+  "plate": true,
+  "layer": 300
  },
  "s07": {
-  "plate": false,
-  "layer": 0
+  "plate": true,
+  "layer": 360
  },
  "s08": {
   "plate": false,
   "layer": 0
  },
  "s09": {
-  "plate": false,
-  "layer": 0
+  "plate": true,
+  "layer": 390
  },
  "s10": {
   "plate": false,
   "layer": 0
  },
  "s10b": {
-  "plate": false,
+  "plate": true,
   "layer": 0
  },
  "s11": {
-  "plate": false,
-  "layer": 0
+  "plate": true,
+  "layer": 300
+ },
+ "s12": {
+  "plate": true,
+  "layer": 360
  },
  "s13": {
-  "plate": false,
-  "layer": 0
+  "plate": true,
+  "layer": 360
  },
  "s14": {
-  "plate": false,
-  "layer": 0
+  "plate": true,
+  "layer": 330
  },
  "s15": {
-  "plate": false,
+  "plate": true,
   "layer": 0
  },
  "s16": {
-  "plate": false,
+  "plate": true,
   "layer": 0
  },
  "s17": {
-  "plate": false,
-  "layer": 0
+  "plate": true,
+  "layer": 450
  },
  "s17b": {
-  "plate": false,
-  "layer": 0
+  "plate": true,
+  "layer": 540
  },
  "s18": {
-  "plate": false,
-  "layer": 0
+  "plate": true,
+  "layer": 480
  },
  "s19": {
-  "plate": false,
-  "layer": 0
+  "plate": true,
+  "layer": 360
  },
  "s20": {
   "plate": false,
   "layer": 0
  },
  "s21": {
-  "plate": false,
-  "layer": 0
+  "plate": true,
+  "layer": 330
  },
  "s23": {
-  "plate": false,
-  "layer": 0
+  "plate": true,
+  "layer": 600
  },
  "s24": {
-  "plate": false,
-  "layer": 0
+  "plate": true,
+  "layer": 270
  },
  "s25": {
-  "plate": false,
+  "plate": true,
   "layer": 0
  },
  "s26": {
-  "plate": false,
+  "plate": true,
   "layer": 0
  },
  "s27": {
-  "plate": false,
+  "plate": true,
   "layer": 0
  },
  "s28": {
-  "plate": false,
+  "plate": true,
   "layer": 0
  },
  "s29": {
-  "plate": false,
-  "layer": 0
+  "plate": true,
+  "layer": 270
  },
  "s30": {
-  "plate": false,
+  "plate": true,
   "layer": 0
  },
  "s31": {
-  "plate": false,
+  "plate": true,
   "layer": 0
  },
  "s32": {
@@ -144,7 +148,7 @@
   "layer": 0
  },
  "s33": {
-  "plate": false,
-  "layer": 0
+  "plate": true,
+  "layer": 570
  }
 }
