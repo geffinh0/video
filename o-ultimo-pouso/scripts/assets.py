@@ -12,7 +12,7 @@ MODELS = [
     "gothic_statue", "marble_bust_01", "brass_candleholders", "wooden_candlestick", "vintage_oil_lamp",
     "Chandelier_01", "Chandelier_03", "fancy_picture_frame_01", "fancy_picture_frame_02", "hanging_picture_frame_01",
     "hanging_picture_frame_02", "hanging_picture_frame_03", "standing_picture_frame_01", "ornate_mirror_01",
-    "book_encyclopedia_set_01", "decorative_book_set_01", "wooden_bookshelf_worn", "vintage_cabinet_01",
+    "book_encyclopedia_set_01", "wooden_bookshelf_worn", "vintage_cabinet_01",
     "ClassicConsole_01", "large_castle_door", "large_iron_gate", "dead_tree_trunk", "dead_tree_trunk_02",
     "tree_stump_01", "boulder_01", "rock_moss_set_01", "antique_ceramic_vase_01", "brass_vase_01", "WoodenChair_01",
     "dining_chair_02", "side_table_tall_01", "gothic_coffee_table", "round_spectacles",
