@@ -8,3 +8,8 @@
 6. **Rede**: liberados `huggingface.co` e CDNs do HF no ambiente para baixar modelos open source.
 7. **Sons**: sintetizados por código (sem bibliotecas externas), para não haver problema de licença.
 8. **Duração**: 418 s (6,97 min), 24 fps.
+9. **Humanos**: rostos gerados por código parecem manequins; Arthur e Eleanor aparecem sempre em silhueta/contraluz (na camada deles as velas e arandelas não os iluminam), de costas, por cima do ombro ou em perfil escuro.
+10. **Planos 2D**: foto do casal (s08), relógio (s10, s32) e retrato torto (s20) são montados no Remotion a partir das texturas (mais nítidos e controláveis que o 3D).
+11. **Foto do casal**: desfocada, em sépia, com o rosto de Eleanor apagado pelo tempo (reforça o mistério e esconde o limite dos modelos).
+12. **Camadas** em meia resolução (960×400) e 12 fps, ampliadas na montagem: ~4 s/quadro em vez de ~15 s.
+13. **Luar**: as luzes do luar são invisíveis para câmera, reflexos e transmissão (senão estouravam através do vidro).
