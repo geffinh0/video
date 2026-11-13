@@ -122,7 +122,7 @@ def eyes(name, coll_, parent, iris=(0.12, 0.09, 0.06), y=0.068, z=0.012, gap=0.0
         lids.append(lid)
     return lids
 
-def build(kind="arthur", loc=(0, 0, 0), rot_z=0.0, coll_name=None):
+def build_legacy(kind="arthur", loc=(0, 0, 0), rot_z=0.0, coll_name=None):
     """Retorna dict de pivôs: root, hips(pelvis), spine, neck, head, sh_L/R, el_L/R, wr_L/R, hip_L/R, kn_L/R, lids."""
     random.seed(7 if kind == "arthur" else 9)
     c = coll(coll_name or kind)
@@ -225,6 +225,132 @@ def build(kind="arthur", loc=(0, 0, 0), rot_z=0.0, coll_name=None):
               [(0.044, 0.045), (0.047, 0.04), (0.045, 0.028), (0.03, 0.02)], mat("shoe", (0.008, 0.008, 0.008), 0.3, coat=0.5), c, kn)
         piv[f"hip{side}"], piv[f"kn{side}"] = hp_, kn
     return dict(root=root, hips=hips, spine=spine, neck=neck, head=head_p, lids=lids, **piv)
+
+def build(kind="arthur", loc=(0, 0, 0), rot_z=0.0, coll_name=None):
+    """Humano sobre a malha base do MakeHuman (CC0), com figurino vitoriano próprio.
+    Pivôs (empties alinhados aos eixos na pose neutra: em pé, braços caídos) dirigem os ossos.
+    Retorna dict: root, hips, spine, neck, head, shL/R, elL/R, wrL/R, hipL/R, knL/R, lids."""
+    from . import mh
+    c = coll(coll_name or kind); male = kind == "arthur"; sex = "male" if male else "female"
+    Hh = 1.80 if male else 1.66
+    o, arm, J = mh.body(coll_name or kind, [(f"macrodetails/universal-{sex}-young-averagemuscle-averageweight", 1.0), (f"macrodetails/caucasian-{sex}-young", 1.0)], Hh, c)
+    # --- materiais (figurino) ---
+    if male:
+        skin = mat_skin("skin_arthur", (0.55, 0.42, 0.36), pale=0.03)
+        coat = mat_noise("coat_black", (0.012, 0.012, 0.014), (0.03, 0.028, 0.032), 60, rough=0.72, bump=0.05)
+        legs = mat_noise("trousers", (0.016, 0.015, 0.017), (0.032, 0.03, 0.032), 80, rough=0.8, bump=0.03)
+        hair_c = (0.012, 0.009, 0.007)
+    else:
+        skin = mat_skin("skin_eleanor", (0.66, 0.52, 0.46), pale=0.06)
+        coat = mat_noise("dress", (0.01, 0.006, 0.012), (0.032, 0.016, 0.028), 34, rough=0.55, bump=0.9, stretch=(1, 1, 14)); legs = coat
+        hair_c = (0.008, 0.006, 0.005)
+    shoe = mat("shoe", (0.008, 0.008, 0.008), 0.3, coat=0.5)
+    hairm = mat_noise(f"hair_{kind}", hair_c, tuple(v * 3 for v in hair_c), 400, rough=0.45, bump=0.6, stretch=(1, 1, 8))
+    eyem = mat("eye_dark", (0.02, 0.015, 0.012), 0.08, coat=1.0)
+    for m in (skin, coat, legs, shoe, coat, hairm, eyem): o.data.materials.append(m)
+    waist = J["spine05"][0].z + 0.02; ankle = J["foot.L"][0].z + 0.05; knee = J["lowerleg01.L"][0].z
+    head_z = J["head"][0].z
+    bm = bmesh.new(); bm.from_mesh(o.data); kill = []
+    for f in bm.faces:
+        cz = f.calc_center_median(); part = f.material_index
+        if part == 0: f.material_index = 0
+        elif part == 1: f.material_index = 3 if cz.z < ankle else (2 if cz.z < waist else 1)
+        elif part == 2:
+            f.material_index = 4
+            if male and cz.z < knee + 0.03: kill.append(f)
+        elif part == 3:
+            f.material_index = 5
+            if male and (cz.z < head_z + (0.105 if cz.y < -0.04 else (0.045 if cz.y < 0.03 else -0.035))): kill.append(f)
+        else: f.material_index = 6
+    bmesh.ops.delete(bm, geom=kill, context="FACES"); bm.to_mesh(o.data); bm.free()
+    for p in o.data.polygons: p.use_smooth = True
+    # roupas com espessura: desloca ao longo das normais antes do esqueleto
+    for vg, st in (("part:helper-tights", 0.013 if male else 0.004), ("part:helper-skirt", 0.022 if male else 0.05), ("part:helper-hair", 0.008)):
+        d = o.modifiers.new("d_" + vg, "DISPLACE"); d.vertex_group = vg; d.strength = st; d.mid_level = 0.0
+    am = o.modifiers["arm"]; o.modifiers.remove(am); am = o.modifiers.new("arm", "ARMATURE"); am.object = arm
+    sd = o.modifiers.new("sub", "SUBSURF"); sd.levels = 1; sd.render_levels = 1
+    # --- pivôs de controle ---
+    def E(name, pos, parent):
+        wp = Vector(pos); lp = wp - parent["_w"] if parent is not None else wp
+        e = empty(f"{kind}_{name}", tuple(lp), parent=parent, coll=c); e["_w"] = tuple(wp); return e
+    class _W(dict): pass
+    def W(e): return {"_w": Vector(e["_w"])}
+    root = empty(kind, (0, 0, 0), coll=c); root["_w"] = (0.0, 0.0, 0.0)
+    def mk(name, pos, par):
+        wp = Vector(pos); lp = wp - Vector(par["_w"])
+        e = empty(f"{kind}_{name}", tuple(lp), parent=par, coll=c); e["_w"] = tuple(wp); return e
+    hips = mk("hips", J["root"][0], root); mh.drive(arm, "root", hips, J["root"][0])
+    spine = mk("spine", J["spine03"][0], hips); mh.drive(arm, "spine03", spine, J["spine03"][0])
+    neck = mk("neck", J["neck01"][0], spine); mh.drive(arm, "neck01", neck, J["neck01"][0])
+    head_p = mk("headp", J["head"][0], neck); mh.drive(arm, "head", head_p, J["head"][0])
+    piv = {}
+    for side, sx in (("L", -1), ("R", 1)):
+        bu, bl, bw = f"upperarm01.{side}", f"lowerarm01.{side}", f"wrist.{side}"
+        ps, pe, pw = J[bu][0], J[bl][0], J[bw][0]; down = Vector((sx * 0.09, 0.0, -1.0)).normalized()
+        qu = (pe - ps).rotation_difference(down)
+        df = qu @ (pw - pe); qf = df.rotation_difference(down) @ qu
+        sh = mk(f"sh{side}", ps, spine)
+        el = mk(f"el{side}", ps + down * (pe - ps).length, sh)
+        wr = mk(f"wr{side}", Vector(el["_w"]) + down * (pw - pe).length, el)
+        for ctl, q, bone, rest in ((sh, qu, bu, ps), (el, qf, bl, pe), (wr, qf, bw, pw)):
+            mh.drive(arm, bone, ctl, rest, q)
+        hp_ = mk(f"hip{side}", J[f"upperleg01.{side}"][0], hips); mh.drive(arm, f"upperleg01.{side}", hp_, J[f"upperleg01.{side}"][0])
+        kn = mk(f"kn{side}", J[f"lowerleg01.{side}"][0], hp_); mh.drive(arm, f"lowerleg01.{side}", kn, J[f"lowerleg01.{side}"][0])
+        piv[f"sh{side}"], piv[f"el{side}"], piv[f"wr{side}"], piv[f"hip{side}"], piv[f"kn{side}"] = sh, el, wr, hp_, kn
+    # --- acessórios do figurino (posicionados sobre a superfície da roupa em repouso) ---
+    tv = [v.co.copy() for v in o.data.vertices if 15328 <= v.index <= 18001]
+    def front(z, x=0.0):
+        ys = [v.y for v in tv if abs(v.x - x) < 0.035 and abs(v.z - z) < 0.025]
+        return (min(ys) if ys else -0.1) - (0.013 if male else 0.004)
+    def rel(par, x, y, z): w = Vector(par["_w"]); return (x - w.x, y - w.y, z - w.z)
+    brass = mat("brass_old", (0.32, 0.2, 0.06), 0.35, metal=1.0)
+    nz = Vector(neck["_w"]).z; sz_ = Vector(spine["_w"]).z; wz = waist
+    if male:
+        shirt = mat("shirt", (0.55, 0.52, 0.47), 0.6, sss=0.1); crav = mat("cravat", (0.035, 0.008, 0.01), 0.45)
+        vest = mat_noise("waistcoat", (0.03, 0.012, 0.012), (0.07, 0.03, 0.025), 220, rough=0.5, bump=0.2)
+        # colarinho alto de pontas, gravata plastron com nó, gola e lapelas largas da sobrecasaca
+        cyl(f"{kind}_collar", 0.058, 0.058, (0, -0.004, 0.04), shirt, parent=neck, coll=c)
+        for sx in (-1, 1):
+            chain(f"{kind}_collarpt{sx}", [rel(neck, sx * 0.03, front(nz + 0.03) + 0.02, nz + 0.075), rel(neck, sx * 0.045, front(nz + 0.03) - 0.004, nz + 0.05)], [(0.016, 0.004), (0.004, 0.002)], shirt, c, neck)
+        chain(f"{kind}_knot", [rel(neck, 0, front(nz + 0.01) - 0.002, nz + 0.03), rel(neck, 0, front(nz - 0.01) - 0.008, nz + 0.0)], [(0.024, 0.016), (0.02, 0.014)], crav, c, neck)
+        chain(f"{kind}_cravat", [rel(spine, 0, front(nz - 0.02) - 0.004, nz - 0.01), rel(spine, 0, front(nz - 0.08) - 0.006, nz - 0.08), rel(spine, 0, front(nz - 0.16) - 0.002, nz - 0.16)], [(0.034, 0.012), (0.046, 0.011), (0.03, 0.007)], crav, c, spine)
+        chain(f"{kind}_coatcollar", [rel(neck, -0.09, -0.02, nz + 0.0), rel(neck, -0.07, 0.06, nz + 0.04), rel(neck, 0, 0.085, nz + 0.05), rel(neck, 0.07, 0.06, nz + 0.04), rel(neck, 0.09, -0.02, nz + 0.0)],
+              [(0.02, 0.034), (0.018, 0.04), (0.018, 0.042), (0.018, 0.04), (0.02, 0.034)], coat, c, neck)
+        for sx in (-1, 1):
+            chain(f"{kind}_lapel{sx}", [rel(spine, sx * 0.075, front(nz - 0.02, sx * 0.07) + 0.004, nz - 0.01), rel(spine, sx * 0.1, front(nz - 0.11, sx * 0.09) - 0.004, nz - 0.11), rel(spine, sx * 0.075, front(nz - 0.2, sx * 0.07) - 0.004, nz - 0.2), rel(spine, sx * 0.03, front(nz - 0.3, sx * 0.03) - 0.002, nz - 0.31)],
+                  [(0.03, 0.009), (0.05, 0.008), (0.042, 0.007), (0.012, 0.005)], coat, c, spine)
+            # colete aparecendo no V, abotoamento duplo e botões das costas
+            for k in range(3):
+                zb = wz + 0.05 + k * 0.085
+                sphere(f"{kind}_btn{sx}{k}", 0.011, rel(spine if zb > sz_ - 0.1 else hips, sx * 0.05, front(zb, sx * 0.05) - 0.002, zb), brass, scale=(1, 0.45, 1), seg=12, parent=spine if zb > sz_ - 0.1 else hips, coll=c)
+            sphere(f"{kind}_backbtn{sx}", 0.011, rel(hips, sx * 0.04, max(v.y for v in tv if abs(v.z - wz) < 0.03) + 0.014, wz + 0.01), brass, scale=(1, 0.45, 1), seg=12, parent=hips, coll=c)
+            # punhos da camisa
+            cyl(f"{kind}_cuff{sx}", 0.037, 0.03, (0, 0, 0.012), shirt, parent=piv["wrL" if sx < 0 else "wrR"], coll=c)
+        chain(f"{kind}_vest", [rel(spine, 0, front(nz - 0.12) + 0.004, nz - 0.12), rel(spine, 0, front(nz - 0.24) + 0.002, nz - 0.25)], [(0.05, 0.01), (0.03, 0.008)], vest, c, spine)
+        # corrente do relógio de bolso
+        ch = [rel(hips, 0.012, front(wz + 0.1) - 0.006, wz + 0.1), rel(hips, 0.06, front(wz + 0.06, 0.06) - 0.012, wz + 0.055), rel(hips, 0.115, front(wz + 0.09, 0.11) - 0.006, wz + 0.09)]
+        chain(f"{kind}_chain", ch, [(0.0025, 0.0025)] * 3, brass, c, hips)
+    else:
+        lace = mat_noise("lace", (0.2, 0.18, 0.16), (0.5, 0.47, 0.42), 300, rough=0.7, bump=0.5)
+        # gola alta de renda com babado, camafeu, mangas bufantes (gigot), punhos e faixa na cintura
+        cyl(f"{kind}_collar", 0.05, 0.07, (0, 0.0, 0.045), lace, parent=neck, coll=c)
+        t = cyl(f"{kind}_ruff", 0.07, 0.012, (0, 0.0, 0.012), lace, verts=40, parent=neck, coll=c)
+        wv = t.modifiers.new("ruffle", "WAVE"); wv.use_normal = False; wv.height = 0.006; wv.width = 0.02; wv.speed = 0
+        sphere(f"{kind}_cameo", 0.016, rel(neck, 0, front(nz + 0.0) - 0.004, nz + 0.005), brass, scale=(1, 0.4, 1.25), seg=16, parent=neck, coll=c)
+        sphere(f"{kind}_cameo_st", 0.011, rel(neck, 0, front(nz + 0.0) - 0.009, nz + 0.005), mat("cameo", (0.05, 0.005, 0.01), 0.15, coat=1.0), scale=(1, 0.4, 1.25), seg=16, parent=neck, coll=c)
+        for side, sx in (("L", -1), ("R", 1)):
+            pf = sphere(f"{kind}_puff{side}", 0.085, (sx * 0.012, 0, -0.07), coat, scale=(1.0, 1.05, 1.45), seg=28, parent=piv[f"sh{side}"], coll=c)
+            cyl(f"{kind}_cuff{side}", 0.034, 0.04, (0, 0, 0.02), lace, verts=24, parent=piv[f"wr{side}"], coll=c)
+        for k in range(7):
+            zb = wz + 0.06 + k * 0.045
+            sphere(f"{kind}_btn{k}", 0.006, rel(spine if zb > sz_ - 0.1 else hips, 0, front(zb) - 0.004, zb), mat("jet", (0.004, 0.004, 0.005), 0.12, coat=1.0), seg=10, parent=spine if zb > sz_ - 0.1 else hips, coll=c)
+        bw = [v for v in tv if abs(v.z - (wz + 0.03)) < 0.02]
+        rx = max(abs(v.x) for v in bw) + 0.012; ry = (max(v.y for v in bw) - min(v.y for v in bw)) / 2 + 0.012; cyy = (max(v.y for v in bw) + min(v.y for v in bw)) / 2
+        cyl(f"{kind}_sash", 1.0, 0.05, rel(hips, 0, cyy, wz + 0.03), mat("sash", (0.045, 0.006, 0.012), 0.4), verts=40, parent=hips, coll=c).scale = (rx, ry, 1)
+    root.location = loc; root.rotation_euler = (0, 0, rot_z)
+    lids = [empty(f"{kind}_lid{k}", (0, 0, 0), parent=head_p, coll=c) for k in (0, 1)]
+    bpy.context.view_layer.update()
+    return dict(root=root, hips=hips, spine=spine, neck=neck, head=head_p, lids=lids, body=o, arm=arm, **piv)
 
 # ---------------- poses (graus) ----------------
 R = math.radians

@@ -4,7 +4,7 @@ import bpy
 from pouso.core import *; from pouso import human
 reset(); bpy.context.scene.view_settings.exposure = 0.8
 kind = sys.argv[2]
-for i, rz in enumerate((20, 90, 200)):
+for i, rz in enumerate((200, 90, 20)):
     rig = human.build(kind, (i * 1.2 - 1.2, 0, 0), math.radians(rz), coll_name=f"{kind}{i}")
     if "sit" in sys.argv: human.pose(rig, **human.SIT, **human.WRITE)
 box("floor", (8, 8, 0.02), (0, 0, -0.01), mat("fl", (0.05, 0.04, 0.03), 0.6))
