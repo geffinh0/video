@@ -29,6 +29,7 @@ def ext(fog=0.015, mansion=True, forest_n=70, moon=2.2, exposure=0.8):
     win = None
     if mansion: _, win = exterior.mansion(c, (0, 30, 0))
     exterior.forest(c, (0, 10), 35, forest_n, clear=((0, 22), 14))
+    exterior.scatter(c, (0, -16))
     world_fog(fog, (0.28, 0.36, 0.45), 0.5)
     bpy.context.scene.view_settings.exposure = exposure
     return c, win
