@@ -1,0 +1,150 @@
+{
+ "ins_candle": {
+  "plate": false,
+  "layer": 0
+ },
+ "ins_glass": {
+  "plate": false,
+  "layer": 0
+ },
+ "ins_hand": {
+  "plate": false,
+  "layer": 0
+ },
+ "ins_key": {
+  "plate": false,
+  "layer": 0
+ },
+ "ins_shadow": {
+  "plate": false,
+  "layer": 0
+ },
+ "s02": {
+  "plate": true,
+  "layer": 0
+ },
+ "s03": {
+  "plate": true,
+  "layer": 0
+ },
+ "s04": {
+  "plate": false,
+  "layer": 0
+ },
+ "s05": {
+  "plate": false,
+  "layer": 0
+ },
+ "s06": {
+  "plate": false,
+  "layer": 0
+ },
+ "s07": {
+  "plate": false,
+  "layer": 0
+ },
+ "s08": {
+  "plate": false,
+  "layer": 0
+ },
+ "s09": {
+  "plate": false,
+  "layer": 0
+ },
+ "s10": {
+  "plate": false,
+  "layer": 0
+ },
+ "s10b": {
+  "plate": false,
+  "layer": 0
+ },
+ "s11": {
+  "plate": false,
+  "layer": 0
+ },
+ "s13": {
+  "plate": false,
+  "layer": 0
+ },
+ "s14": {
+  "plate": false,
+  "layer": 0
+ },
+ "s15": {
+  "plate": false,
+  "layer": 0
+ },
+ "s16": {
+  "plate": false,
+  "layer": 0
+ },
+ "s17": {
+  "plate": false,
+  "layer": 0
+ },
+ "s17b": {
+  "plate": false,
+  "layer": 0
+ },
+ "s18": {
+  "plate": false,
+  "layer": 0
+ },
+ "s19": {
+  "plate": false,
+  "layer": 0
+ },
+ "s20": {
+  "plate": false,
+  "layer": 0
+ },
+ "s21": {
+  "plate": false,
+  "layer": 0
+ },
+ "s23": {
+  "plate": false,
+  "layer": 0
+ },
+ "s24": {
+  "plate": false,
+  "layer": 0
+ },
+ "s25": {
+  "plate": false,
+  "layer": 0
+ },
+ "s26": {
+  "plate": false,
+  "layer": 0
+ },
+ "s27": {
+  "plate": false,
+  "layer": 0
+ },
+ "s28": {
+  "plate": false,
+  "layer": 0
+ },
+ "s29": {
+  "plate": false,
+  "layer": 0
+ },
+ "s30": {
+  "plate": false,
+  "layer": 0
+ },
+ "s31": {
+  "plate": false,
+  "layer": 0
+ },
+ "s32": {
+  "plate": false,
+  "layer": 0
+ },
+ "s33": {
+  "plate": false,
+  "layer": 0
+ }
+}

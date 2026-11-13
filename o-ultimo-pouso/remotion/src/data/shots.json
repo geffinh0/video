@@ -1,0 +1,1272 @@
+{
+ "fps": 24,
+ "_doc": "Fonte da verdade do filme. dur em segundos. lines: [id_fala, inicio_s]. sfx: [nome, inicio_s, volume]. move: movimento de câmera na pós (zoom de/até, pan x/y). layers: camadas animadas renderizadas com fundo transparente.",
+ "shots": [
+  {
+   "id": "s01",
+   "seq": 1,
+   "dur": 10,
+   "set": "black",
+   "desc": "Tela preta. Chuva e trovão.",
+   "lines": [
+    [
+     "N1",
+     3.0
+    ],
+    [
+     "N2",
+     6.6
+    ]
+   ],
+   "sfx": [
+    [
+     "rain_ext",
+     0,
+     0.9
+    ],
+    [
+     "thunder_far",
+     1.2,
+     0.8
+    ],
+    [
+     "cello",
+     2.0,
+     0.5
+    ]
+   ]
+  },
+  {
+   "id": "s02",
+   "seq": 1,
+   "dur": 12,
+   "set": "forest",
+   "desc": "Floresta de árvores mortas e neblina, travelling aéreo lento.",
+   "move": {
+    "zoom": [
+     1.0,
+     1.12
+    ],
+    "pan": [
+     [
+      0,
+      0
+     ],
+     [
+      -60,
+      10
+     ]
+    ]
+   },
+   "lines": [
+    [
+     "N3",
+     2.5
+    ]
+   ],
+   "sfx": [
+    [
+     "rain_ext",
+     0,
+     0.8
+    ],
+    [
+     "wind",
+     0,
+     0.5
+    ]
+   ]
+  },
+  {
+   "id": "s03",
+   "seq": 1,
+   "dur": 17,
+   "set": "mansion",
+   "desc": "Revelação da mansão entre as árvores; uma janela acesa.",
+   "move": {
+    "zoom": [
+     1.0,
+     1.25
+    ],
+    "pan": [
+     [
+      0,
+      0
+     ],
+     [
+      20,
+      -10
+     ]
+    ]
+   },
+   "flash": [
+    7.5
+   ],
+   "sfx": [
+    [
+     "rain_ext",
+     0,
+     0.8
+    ],
+    [
+     "wind",
+     0,
+     0.5
+    ],
+    [
+     "thunder_near",
+     7.4,
+     0.9
+    ]
+   ]
+  },
+  {
+   "id": "s04",
+   "seq": 1,
+   "dur": 10,
+   "set": "statue",
+   "desc": "Corvo sobre estátua de pedra, close com profundidade de campo.",
+   "layers": [
+    "raven_idle"
+   ],
+   "move": {
+    "zoom": [
+     1.05,
+     1.12
+    ]
+   },
+   "sfx": [
+    [
+     "rain_ext",
+     0,
+     0.7
+    ],
+    [
+     "raven_caw",
+     6.0,
+     0.5
+    ]
+   ]
+  },
+  {
+   "id": "s05",
+   "seq": 1,
+   "dur": 6,
+   "set": "window_ext",
+   "desc": "Aproximação lenta da janela iluminada.",
+   "move": {
+    "zoom": [
+     1.0,
+     1.35
+    ]
+   },
+   "sfx": [
+    [
+     "rain_ext",
+     0,
+     0.7
+    ],
+    [
+     "cello",
+     0,
+     0.4
+    ]
+   ]
+  },
+  {
+   "id": "s05t",
+   "seq": 1,
+   "dur": 5,
+   "set": "title",
+   "desc": "Corte para preto. Título O ÚLTIMO POUSO.",
+   "sfx": [
+    [
+     "rain_ext",
+     0,
+     0.4
+    ],
+    [
+     "boom",
+     0.3,
+     0.8
+    ]
+   ]
+  },
+  {
+   "id": "s06",
+   "seq": 2,
+   "dur": 10,
+   "set": "study_wide",
+   "desc": "Plano geral do escritório, Arthur sentado sozinho. Travelling lateral.",
+   "layers": [
+    "arthur_write_wide"
+   ],
+   "move": {
+    "zoom": [
+     1.08,
+     1.08
+    ],
+    "pan": [
+     [
+      -50,
+      0
+     ],
+     [
+      50,
+      0
+     ]
+    ]
+   },
+   "sfx": [
+    [
+     "rain_int",
+     0,
+     0.6
+    ],
+    [
+     "clock_tick",
+     0,
+     0.35
+    ]
+   ]
+  },
+  {
+   "id": "s07",
+   "seq": 2,
+   "dur": 12,
+   "set": "study_desk",
+   "desc": "Arthur escrevendo à luz de velas, plano médio.",
+   "layers": [
+    "arthur_write_mid"
+   ],
+   "move": {
+    "zoom": [
+     1.0,
+     1.06
+    ]
+   },
+   "sfx": [
+    [
+     "rain_int",
+     0,
+     0.5
+    ],
+    [
+     "clock_tick",
+     0,
+     0.35
+    ],
+    [
+     "pen",
+     1.0,
+     0.5
+    ]
+   ]
+  },
+  {
+   "id": "s08",
+   "seq": 2,
+   "dur": 8,
+   "set": "photo",
+   "desc": "Fotografia de Arthur e Eleanor, macro.",
+   "move": {
+    "zoom": [
+     1.0,
+     1.15
+    ]
+   },
+   "lines": [
+    [
+     "A1",
+     1.6
+    ],
+    [
+     "A2",
+     4.6
+    ]
+   ],
+   "sfx": [
+    [
+     "rain_int",
+     0,
+     0.5
+    ],
+    [
+     "clock_tick",
+     0,
+     0.3
+    ]
+   ]
+  },
+  {
+   "id": "s09",
+   "seq": 2,
+   "dur": 13,
+   "set": "arthur_profile",
+   "desc": "Rosto de Arthur (perfil em contraluz) falando com a fotografia; olha a cadeira vazia.",
+   "layers": [
+    "arthur_profile_talk"
+   ],
+   "move": {
+    "zoom": [
+     1.0,
+     1.08
+    ]
+   },
+   "lines": [
+    [
+     "A3",
+     1.5
+    ],
+    [
+     "A4",
+     7.8
+    ]
+   ],
+   "sfx": [
+    [
+     "rain_int",
+     0,
+     0.5
+    ],
+    [
+     "clock_tick",
+     0,
+     0.3
+    ]
+   ]
+  },
+  {
+   "id": "s10",
+   "seq": 2,
+   "dur": 8,
+   "set": "clock",
+   "desc": "Relógio marca 3h16; pêndulo.",
+   "layers": [
+    "pendulum"
+   ],
+   "move": {
+    "zoom": [
+     1.0,
+     1.1
+    ]
+   },
+   "sfx": [
+    [
+     "rain_int",
+     0,
+     0.5
+    ],
+    [
+     "clock_tick_loud",
+     0,
+     0.6
+    ],
+    [
+     "wind_gust",
+     5.0,
+     0.5
+    ]
+   ]
+  },
+  {
+   "id": "s10b",
+   "seq": 2,
+   "dur": 7,
+   "set": "window_int",
+   "desc": "Corte para a janela: TRÊS BATIDAS. Arthur paralisa.",
+   "move": {
+    "zoom": [
+     1.0,
+     1.04
+    ]
+   },
+   "sfx": [
+    [
+     "rain_int",
+     0,
+     0.5
+    ],
+    [
+     "knock_glass3",
+     2.0,
+     0.9
+    ],
+    [
+     "silence_drop",
+     4.0,
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "s11",
+   "seq": 3,
+   "dur": 10,
+   "set": "ots_window",
+   "desc": "Arthur vira lentamente em direção à janela (over-the-shoulder). Corvo no parapeito.",
+   "layers": [
+    "arthur_turn",
+    "raven_sill"
+   ],
+   "move": {
+    "zoom": [
+     1.0,
+     1.06
+    ]
+   },
+   "sfx": [
+    [
+     "rain_int",
+     0,
+     0.6
+    ],
+    [
+     "heartbeat",
+     2.0,
+     0.4
+    ]
+   ]
+  },
+  {
+   "id": "s12",
+   "seq": 3,
+   "dur": 12,
+   "set": "raven_sill",
+   "desc": "Corvo no parapeito sob a chuva, close.",
+   "layers": [
+    "raven_sill_close"
+   ],
+   "rainGlass": true,
+   "move": {
+    "zoom": [
+     1.0,
+     1.1
+    ]
+   },
+   "lines": [
+    [
+     "A5",
+     2.0
+    ],
+    [
+     "A6",
+     7.5
+    ]
+   ],
+   "sfx": [
+    [
+     "rain_glass",
+     0,
+     0.8
+    ],
+    [
+     "chair_scrape",
+     4.5,
+     0.6
+    ],
+    [
+     "steps_wood",
+     5.5,
+     0.5
+    ]
+   ]
+  },
+  {
+   "id": "s13",
+   "seq": 3,
+   "dur": 12,
+   "set": "raven_eye",
+   "desc": "Olho do corvo em detalhe extremo; inclina a cabeça e diz o nome.",
+   "layers": [
+    "raven_eye"
+   ],
+   "move": {
+    "zoom": [
+     1.0,
+     1.18
+    ]
+   },
+   "lines": [
+    [
+     "C1",
+     6.0
+    ]
+   ],
+   "sfx": [
+    [
+     "rain_glass",
+     0,
+     0.6
+    ],
+    [
+     "low_drone",
+     0,
+     0.5
+    ]
+   ]
+  },
+  {
+   "id": "s14",
+   "seq": 3,
+   "dur": 11,
+   "set": "arthur_recoil",
+   "desc": "Arthur recua; corvo bica o vidro; trovão; velas apagam; corvo sumiu.",
+   "layers": [
+    "arthur_recoil"
+   ],
+   "move": {
+    "zoom": [
+     1.15,
+     1.0
+    ]
+   },
+   "flash": [
+    7.0
+   ],
+   "blackout": [
+    7.2,
+    8.6
+   ],
+   "lines": [
+    [
+     "A7",
+     0.6
+    ],
+    [
+     "C2",
+     3.6
+    ]
+   ],
+   "sfx": [
+    [
+     "peck_glass",
+     2.6,
+     0.9
+    ],
+    [
+     "thunder_near",
+     6.9,
+     1.0
+    ],
+    [
+     "candle_out",
+     7.1,
+     0.6
+    ],
+    [
+     "rain_int",
+     0,
+     0.6
+    ]
+   ]
+  },
+  {
+   "id": "s15",
+   "seq": 4,
+   "dur": 12,
+   "set": "drawer",
+   "desc": "Arthur procura entre papéis e força a gaveta emperrada.",
+   "layers": [
+    "drawer_open"
+   ],
+   "move": {
+    "zoom": [
+     1.0,
+     1.05
+    ]
+   },
+   "sfx": [
+    [
+     "rain_int",
+     0,
+     0.5
+    ],
+    [
+     "paper",
+     0.5,
+     0.6
+    ],
+    [
+     "drawer_force",
+     4.0,
+     0.9
+    ]
+   ]
+  },
+  {
+   "id": "s16",
+   "seq": 4,
+   "dur": 11,
+   "set": "letter_closed",
+   "desc": "Carta amarelada: PARA ARTHUR. QUANDO ELE VOLTAR.",
+   "move": {
+    "zoom": [
+     1.0,
+     1.2
+    ]
+   },
+   "sfx": [
+    [
+     "rain_int",
+     0,
+     0.5
+    ],
+    [
+     "paper",
+     1.0,
+     0.5
+    ],
+    [
+     "cello",
+     3.0,
+     0.4
+    ]
+   ]
+  },
+  {
+   "id": "s17",
+   "seq": 4,
+   "dur": 15,
+   "set": "letter_read",
+   "desc": "Arthur lê a carta, mãos tremendo; rack focus.",
+   "layers": [
+    "hands_letter"
+   ],
+   "rack": [
+    4.0,
+    7.0
+   ],
+   "move": {
+    "zoom": [
+     1.0,
+     1.06
+    ]
+   },
+   "lines": [
+    [
+     "E1",
+     1.5
+    ],
+    [
+     "E2",
+     4.6
+    ]
+   ],
+   "sfx": [
+    [
+     "paper",
+     0.2,
+     0.6
+    ],
+    [
+     "breath",
+     0.5,
+     0.4
+    ],
+    [
+     "rain_int",
+     0,
+     0.4
+    ]
+   ]
+  },
+  {
+   "id": "s17b",
+   "seq": 4,
+   "dur": 18,
+   "set": "letter_window",
+   "desc": "Arthur interrompe a leitura, olha a janela vazia, continua.",
+   "move": {
+    "zoom": [
+     1.0,
+     1.08
+    ]
+   },
+   "lines": [
+    [
+     "E3",
+     2.8
+    ],
+    [
+     "E4",
+     6.8
+    ],
+    [
+     "E5",
+     10.6
+    ],
+    [
+     "E6",
+     13.0
+    ]
+   ],
+   "sfx": [
+    [
+     "rain_int",
+     0,
+     0.5
+    ],
+    [
+     "low_drone",
+     8.0,
+     0.4
+    ]
+   ]
+  },
+  {
+   "id": "s18",
+   "seq": 4,
+   "dur": 16,
+   "set": "door_deep",
+   "desc": "Carta cai. Plano profundo: porta entreaberta ao fundo se move.",
+   "layers": [
+    "letter_fall",
+    "door_ajar"
+   ],
+   "lines": [
+    [
+     "A8",
+     2.0
+    ],
+    [
+     "E7",
+     8.0
+    ]
+   ],
+   "sfx": [
+    [
+     "paper_fall",
+     0.6,
+     0.7
+    ],
+    [
+     "rain_int",
+     0,
+     0.4
+    ],
+    [
+     "wood_creak",
+     12.5,
+     0.9
+    ]
+   ]
+  },
+  {
+   "id": "s19",
+   "seq": 5,
+   "dur": 12,
+   "set": "corridor",
+   "desc": "Arthur percorre o corredor comprido (travelling de acompanhamento).",
+   "layers": [
+    "arthur_walk"
+   ],
+   "move": {
+    "zoom": [
+     1.0,
+     1.15
+    ]
+   },
+   "sfx": [
+    [
+     "steps_corridor",
+     0.5,
+     0.7
+    ],
+    [
+     "wind_int",
+     0,
+     0.4
+    ]
+   ]
+  },
+  {
+   "id": "s20",
+   "seq": 5,
+   "dur": 8,
+   "set": "portrait",
+   "desc": "Retratos antigos; o de Eleanor está torto. Choro distante.",
+   "move": {
+    "zoom": [
+     1.0,
+     1.12
+    ]
+   },
+   "sfx": [
+    [
+     "crying",
+     1.0,
+     0.45
+    ],
+    [
+     "wind_int",
+     0,
+     0.3
+    ]
+   ]
+  },
+  {
+   "id": "s21",
+   "seq": 5,
+   "dur": 11,
+   "set": "flashback_door",
+   "desc": "FLASHBACK âmbar: Eleanor diante da porta, rosto oculto; bate três vezes.",
+   "layers": [
+    "eleanor_knock"
+   ],
+   "warm": true,
+   "move": {
+    "zoom": [
+     1.0,
+     1.08
+    ]
+   },
+   "lines": [
+    [
+     "E8",
+     6.8
+    ]
+   ],
+   "sfx": [
+    [
+     "piano",
+     0,
+     0.5
+    ],
+    [
+     "knock_wood3",
+     3.0,
+     0.7
+    ]
+   ]
+  },
+  {
+   "id": "s22",
+   "seq": 5,
+   "dur": 7,
+   "set": "inserts",
+   "desc": "Cortes rápidos: chave, vela caindo, vidro quebrando, sombra, mão na porta.",
+   "warm": true,
+   "inserts": [
+    "ins_key",
+    "ins_candle",
+    "ins_glass",
+    "ins_shadow",
+    "ins_hand"
+   ],
+   "sfx": [
+    [
+     "hit",
+     0,
+     0.7
+    ],
+    [
+     "candle_fall",
+     1.4,
+     0.7
+    ],
+    [
+     "glass_break",
+     2.8,
+     0.9
+    ],
+    [
+     "whoosh",
+     4.2,
+     0.6
+    ],
+    [
+     "hit",
+     5.6,
+     0.7
+    ]
+   ]
+  },
+  {
+   "id": "s23",
+   "seq": 5,
+   "dur": 20,
+   "set": "door_present",
+   "desc": "Presente: Arthur diante da mesma porta; voz dela do outro lado.",
+   "layers": [
+    "arthur_door"
+   ],
+   "move": {
+    "zoom": [
+     1.0,
+     1.12
+    ]
+   },
+   "lines": [
+    [
+     "A9",
+     1.5
+    ],
+    [
+     "E9",
+     5.0
+    ],
+    [
+     "A10",
+     9.0
+    ],
+    [
+     "E10",
+     12.0
+    ]
+   ],
+   "sfx": [
+    [
+     "low_drone",
+     0,
+     0.5
+    ],
+    [
+     "wind_int",
+     0,
+     0.3
+    ]
+   ]
+  },
+  {
+   "id": "s24",
+   "seq": 6,
+   "dur": 9,
+   "set": "study_return",
+   "desc": "Arthur volta correndo: carta sobre a mesa, janela aberta, cortinas ao vento.",
+   "layers": [
+    "curtains"
+   ],
+   "move": {
+    "zoom": [
+     1.1,
+     1.0
+    ]
+   },
+   "sfx": [
+    [
+     "steps_run",
+     0,
+     0.8
+    ],
+    [
+     "wind_open",
+     0,
+     0.8
+    ],
+    [
+     "rain_open",
+     0,
+     0.7
+    ]
+   ]
+  },
+  {
+   "id": "s25",
+   "seq": 6,
+   "dur": 12,
+   "set": "raven_chair",
+   "desc": "O corvo está sentado na cadeira de Eleanor.",
+   "layers": [
+    "raven_chair"
+   ],
+   "move": {
+    "zoom": [
+     1.0,
+     1.1
+    ]
+   },
+   "lines": [
+    [
+     "A11",
+     2.0
+    ],
+    [
+     "A12",
+     7.0
+    ]
+   ],
+   "sfx": [
+    [
+     "wind_open",
+     0,
+     0.5
+    ],
+    [
+     "rain_open",
+     0,
+     0.5
+    ]
+   ]
+  },
+  {
+   "id": "s26",
+   "seq": 6,
+   "dur": 8,
+   "set": "raven_beak",
+   "desc": "Close no bico do corvo: Você abriu.",
+   "layers": [
+    "raven_beak"
+   ],
+   "move": {
+    "zoom": [
+     1.0,
+     1.1
+    ]
+   },
+   "lines": [
+    [
+     "C3",
+     2.5
+    ]
+   ],
+   "sfx": [
+    [
+     "low_drone",
+     0,
+     0.6
+    ]
+   ]
+  },
+  {
+   "id": "s27",
+   "seq": 6,
+   "dur": 12,
+   "set": "arthur_face",
+   "desc": "Relógio bate três vezes; câmera se aproxima do rosto de Arthur.",
+   "layers": [
+    "arthur_face"
+   ],
+   "move": {
+    "zoom": [
+     1.0,
+     1.3
+    ]
+   },
+   "lines": [
+    [
+     "A13",
+     9.0
+    ]
+   ],
+   "sfx": [
+    [
+     "clock_bell3",
+     1.0,
+     0.9
+    ],
+    [
+     "low_drone",
+     0,
+     0.5
+    ]
+   ]
+  },
+  {
+   "id": "s28",
+   "seq": 6,
+   "dur": 7,
+   "set": "wrist",
+   "desc": "Detalhe: marca avermelhada no pulso.",
+   "move": {
+    "zoom": [
+     1.0,
+     1.15
+    ]
+   },
+   "sfx": [
+    [
+     "heartbeat",
+     0,
+     0.6
+    ]
+   ]
+  },
+  {
+   "id": "s29",
+   "seq": 6,
+   "dur": 9,
+   "set": "raven_wings",
+   "desc": "O corvo abre as asas: Lembre-se. A iluminação apaga.",
+   "layers": [
+    "raven_wings"
+   ],
+   "blackout": [
+    7.0,
+    9.0
+   ],
+   "lines": [
+    [
+     "C4",
+     3.0
+    ]
+   ],
+   "sfx": [
+    [
+     "wings",
+     2.0,
+     0.8
+    ],
+    [
+     "boom",
+     6.8,
+     0.9
+    ]
+   ]
+  },
+  {
+   "id": "s30",
+   "seq": 7,
+   "dur": 12,
+   "set": "dawn_wide",
+   "desc": "Amanhecer: escritório vazio, cadeira afastada, silêncio.",
+   "move": {
+    "zoom": [
+     1.0,
+     1.06
+    ]
+   },
+   "sfx": [
+    [
+     "birds_far",
+     0,
+     0.25
+    ],
+    [
+     "room_tone",
+     0,
+     0.3
+    ]
+   ]
+  },
+  {
+   "id": "s31",
+   "seq": 7,
+   "dur": 11,
+   "set": "letter_final",
+   "desc": "Travelling até a carta: AGORA É A SUA VEZ DE ESPERAR.",
+   "move": {
+    "zoom": [
+     1.0,
+     1.3
+    ]
+   },
+   "sfx": [
+    [
+     "room_tone",
+     0,
+     0.3
+    ],
+    [
+     "cello",
+     4.0,
+     0.4
+    ]
+   ]
+  },
+  {
+   "id": "s32",
+   "seq": 7,
+   "dur": 7,
+   "set": "clock_317",
+   "desc": "O relógio marca 3h17.",
+   "layers": [
+    "pendulum_still"
+   ],
+   "move": {
+    "zoom": [
+     1.0,
+     1.08
+    ]
+   },
+   "lines": [
+    [
+     "N4",
+     2.5
+    ]
+   ],
+   "sfx": [
+    [
+     "clock_tick",
+     0,
+     0.4
+    ]
+   ]
+  },
+  {
+   "id": "s33",
+   "seq": 7,
+   "dur": 19,
+   "set": "raven_window_final",
+   "desc": "Corvo do lado de fora encara a câmera; diz Eleanor; voa na neblina.",
+   "layers": [
+    "raven_final"
+   ],
+   "move": {
+    "zoom": [
+     1.0,
+     1.12
+    ]
+   },
+   "lines": [
+    [
+     "N5",
+     1.5
+    ],
+    [
+     "N6",
+     5.0
+    ],
+    [
+     "C5",
+     11.0
+    ]
+   ],
+   "sfx": [
+    [
+     "wind",
+     0,
+     0.4
+    ],
+    [
+     "wings",
+     13.0,
+     0.8
+    ]
+   ]
+  },
+  {
+   "id": "s34",
+   "seq": 7,
+   "dur": 5,
+   "set": "black",
+   "desc": "Corte para preto. Três batidas.",
+   "sfx": [
+    [
+     "knock_wood3",
+     1.0,
+     0.9
+    ]
+   ]
+  },
+  {
+   "id": "s35",
+   "seq": 7,
+   "dur": 14,
+   "set": "credits",
+   "desc": "Créditos.",
+   "sfx": [
+    [
+     "cello",
+     0,
+     0.4
+    ],
+    [
+     "rain_ext",
+     0,
+     0.3
+    ]
+   ]
+  }
+ ]
+}
