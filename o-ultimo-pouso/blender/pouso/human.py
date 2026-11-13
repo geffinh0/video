@@ -486,4 +486,4 @@ def key_pose(rig, frame, **kw):
 SIT = dict(hipL=(-88, 0, -4), hipR=(-88, 0, 4), knL=(85, 0, 0), knR=(85, 0, 0))
 STAND = dict(hipL=(0, 0, 0), hipR=(0, 0, 0), knL=(0, 0, 0), knR=(0, 0, 0))
 ARMS_DOWN = dict(shL=(0, 0, 0), shR=(0, 0, 0), elL=(0, 0, 0), elR=(0, 0, 0), wrL=(0, 0, 0), wrR=(0, 0, 0))
-WRITE = dict(spine=(18, 0, 0), neck=(18, 0, 0), shR=(-45, 0, 12), elR=(-70, 0, 0), wrR=(10, 0, 0), shL=(-38, 0, -15), elL=(-75, 0, 25), wrL=(0, 0, 0))
+WRITE = dict(spine=(16, 0, 0), neck=(18, 0, 0), shR=(-46, 0, 12), elR=(-76, 0, 0), wrR=(10, 0, 0), shL=(-40, 0, -15), elL=(-80, 0, 25), wrL=(0, 0, 0))

@@ -360,6 +360,11 @@ def mat_pbr(name, tex, scale=1.0, tint=(1, 1, 1), value=1.0, sat=1.0, rough=1.0,
         hs = _n(m, "ShaderNodeHueSaturation"); hs.inputs["Saturation"].default_value = sat; hs.inputs["Value"].default_value = value; L.new(di.outputs["Color"], hs.inputs["Color"])
         mx = _n(m, "ShaderNodeMix", data_type="RGBA", blend_type="MULTIPLY"); mx.inputs[0].default_value = 1.0; mx.inputs[7].default_value = (*tint, 1)
         L.new(hs.outputs[0], mx.inputs[6]); L.new(mx.outputs[2], b.inputs["Base Color"])
+    if not di:      # textura sem mapa de cor: usa a cor do filme com leve variação
+        nzc = _n(m, "ShaderNodeTexNoise", Scale=9.0, Detail=6.0); L.new(mp.outputs[0], nzc.inputs["Vector"])
+        mxc = _n(m, "ShaderNodeMix", data_type="RGBA"); L.new(nzc.outputs["Fac"], mxc.inputs[0])
+        mxc.inputs[6].default_value = (*[t * value * 0.55 for t in tint], 1); mxc.inputs[7].default_value = (*[t * value for t in tint], 1)
+        L.new(mxc.outputs[2], b.inputs["Base Color"])
     ri = img("rough", "Non-Color")
     if ri:
         mr = _n(m, "ShaderNodeMath", operation="MULTIPLY"); mr.use_clamp = True; mr.inputs[1].default_value = rough; L.new(ri.outputs["Color"], mr.inputs[0]); L.new(mr.outputs[0], b.inputs["Roughness"])

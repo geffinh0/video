@@ -36,13 +36,16 @@ def ext(fog=0.015, mansion=True, forest_n=70, moon=2.2, exposure=0.8):
 
 def room(exposure=1.2, dawn=False, window_open=False):
     A = study.build(TEX)
-    bpy.context.scene.view_settings.exposure = exposure
+    bpy.context.scene.view_settings.exposure = exposure + 0.5
+    if not dawn:
+        b = light("warm_bounce", "AREA", (0.1, 0.3, 3.1), 26, kelvin(2100), size=2.5); b.visible_camera = False; b.visible_glossy = False
+        w = A["window"]; f = light("cool_spill", "AREA", (w.x + 0.6, w.y, w.z + 0.3), 60, kelvin(9500), size=1.2, rot=(0, R(-90), 0)); f.visible_camera = False; f.visible_glossy = False
     if dawn:
         for fl, L in A["candles"]: fl.hide_render = True; L.hide_render = True
         m = bpy.data.objects["moon"]; m.data.energy = 2200; m.data.color = kelvin(7500)
         world_color((0.03, 0.04, 0.05), 1.0)
         w = A["window"]
-        for nm, off, e, sz in [("dawn_fill", (0.5, 0, 0), 140, 1.6), ("dawn_bounce", (3.0, 0, 1.2), 35, 3.0)]:
+        for nm, off, e, sz in [("dawn_fill", (0.5, 0, 0), 85, 1.6), ("dawn_bounce", (3.0, 0, 1.2), 28, 3.0)]:
             lo = light(nm, "AREA", (w.x + off[0], w.y + off[1], w.z + off[2]), e, kelvin(7800), size=sz, rot=(0, R(-90) if nm == "dawn_fill" else 0, 0))
             lo.visible_camera = False; lo.visible_glossy = nm != "dawn_fill"
     if window_open:
@@ -72,7 +75,7 @@ def to_layer(objs, name="layerobjs"):
 def arthur_seated(loc=(0, -0.62, 0), writing=True):
     rig = human.build("arthur", loc)
     human.pose(rig, **human.SIT, **(human.WRITE if writing else {}))
-    rig["root"].location = (loc[0], loc[1], loc[2] - 0.47)
+    rig["root"].location = (loc[0], loc[1], loc[2] - 0.42)
     return rig
 
 def writing_anim(rig, dur, start=0):
@@ -99,6 +102,7 @@ def shot_build(sid, mode):
         c, _ = ext(fog=0.018)
         perch = exterior.statue(c, (0.2, -14, 0))
         rv = raven.build(perch, R(160), name="raven"); L = ["raven"]; held = ["ext"]
+        raven_lights(perch, (1.4, -16.4, 2.75), k=2.5); bpy.context.scene.view_settings.exposure = 1.6
         raven.head_moves(rv, FPS, dur, seed=4)
         camera("cam", (1.4, -16.4, 2.75), perch + Vector((0, 0, 0.18)), lens=60, fstop=2.0)
     elif sid == "s05":
@@ -136,6 +140,7 @@ def shot_build(sid, mode):
         if sid in ("s11", "s12", "s13", "s14"):
             rv = raven.build(tuple(so + Vector((0, 0, 0.02))), R(-90), name="raven"); L = ["raven"]; held = ["study"]
             raven.head_moves(rv, FPS, dur, seed={"s11": 1, "s12": 2, "s13": 3, "s14": 5}[sid], calm=0.6 if sid == "s13" else 1.0)
+            raven_lights(so, (-1.5, -0.4, 1.2), warm=True, k=1.0 if sid in ("s12", "s13") else 0.6)
         if sid == "s10b":
             camera("cam", (-1.2, -0.9, 1.5), (-3, 0.5, 1.6), lens=35)
         elif sid == "s11":
@@ -178,6 +183,7 @@ def shot_build(sid, mode):
             import random as Rn; r = Rn.Random(2)
             for k in range(int(dur * FPS)):
                 lt.location = (0.05 + r.uniform(-0.002, 0.002), -0.12 + r.uniform(-0.002, 0.002), 1.0 + r.uniform(-0.002, 0.002)); lt.keyframe_insert("location", frame=k)
+            light("read_fill", "AREA", (0.3, -0.75, 1.35), 2.5, kelvin(2200), size=0.5).rotation_euler = (R(50), 0, R(20))
             camera("cam", (0.06, -0.62, 1.12), (0.05, -0.1, 1.0), lens=50, fstop=2.0)
         elif sid == "s31":
             camera("cam", (0.10, -0.40, 1.02), (0.03, -0.12, 0.81), lens=50, fstop=2.8)
@@ -199,7 +205,7 @@ def shot_build(sid, mode):
             hinge.rotation_euler = (0, 0, R(a)); hinge.keyframe_insert("rotation_euler", frame=int(t * FPS))
         camera("cam", (-0.6, -2.2, 1.25), (1.6, 2.6, 1.15), lens=35, fstop=5.6)
     elif sid in ("s19", "s20", "s23"):
-        A = corridor.build(); bpy.context.scene.view_settings.exposure = 1.5; bpy.context.view_layer.update()
+        A = corridor.build(); bpy.context.scene.view_settings.exposure = 2.2 if sid == "s23" else 1.5; bpy.context.view_layer.update()
         if sid == "s19":
             rig = human.build("arthur", (0, 1.0, 0), 0); L = ["arthur"]; held = ["corridor"]
             step = 0.62; n = int((dur - 1) / 0.6)
@@ -225,7 +231,7 @@ def shot_build(sid, mode):
         camera("cam", (-0.5, 8.4, 1.45), (0.05, 11.6, 1.45), lens=45, fstop=2.0)
     elif sid in ("s24", "s25", "s26", "s29"):
         A = room(1.3, window_open=True); held = ["study"]
-        chair_top = Vector((0, 1.33, 1.33))
+        chair_top = Vector((0, 1.43, 1.075))
         if sid == "s24":
             L = ["layerobjs"]; cs = [bpy.data.objects["curtain-1"], bpy.data.objects["curtain1"]]; to_layer(cs)
             for cu in cs:
@@ -233,6 +239,7 @@ def shot_build(sid, mode):
             camera("cam", (2.3, -2.2, 1.7), (-1.0, 0.6, 1.2), lens=26)
         else:
             rv = raven.build(tuple(chair_top), R(180), name="raven"); L = ["raven"]
+            raven_lights(chair_top, (0.2, -0.9, 1.5), warm=True, k=1.3 if sid == "s26" else 0.45)
             raven.head_moves(rv, FPS, dur, seed={"s25": 7, "s26": 8, "s29": 9}[sid], calm=0.5)
             if sid == "s25": camera("cam", (0.3, -0.9, 1.45), tuple(chair_top + Vector((0, 0, 0.2))), lens=45, fstop=2.8)
             elif sid == "s26":
@@ -246,15 +253,17 @@ def shot_build(sid, mode):
         human.pose(rig, spine=(5, 0, 0), shR=(-35, 0, 10), elR=(-80, 0, 0), shL=(-30, 0, -10), elL=(-80, 0, 20))
         for t, lid, nk in [(0, -35, 0), (8.5, -35, 0), (9.2, 25, -4), (10.2, 25, -6), (11, -20, 8), (dur, -20, -8)]:
             human.key_pose(rig, int(t * FPS), lids=lid, neck=(nk, 0, 0))
-        camera("cam", (0.55, -0.25, 1.3), (-0.3, -0.62, 1.25), lens=85, fstop=2.0)
+        camera("cam", (1.3, -1.05, 1.22), (-3.0, 0.5, 1.2), lens=70, fstop=8.0, focus=1.4)
     elif sid == "s28":
-        A = room(1.4); rig = arthur_seated(writing=False)
-        human.pose(rig, spine=(15, 0, 0), shR=(-50, 0, 10), elR=(-60, 0, 0), wrR=(20, 0, 0)); bpy.context.view_layer.update()
+        A = room(0.6); rig = arthur_seated(writing=True); bpy.context.view_layer.update()
         wr = rig["wrR"].matrix_world.translation.copy()
-        tor = bpy.ops.mesh.primitive_torus_add(major_radius=0.034, minor_radius=0.004, location=wr); t = bpy.context.object
-        t.data.materials.append(mat("wound", (0.25, 0.02, 0.02), 0.6)); t.parent = rig["wrR"]; t.matrix_parent_inverse = rig["wrR"].matrix_world.inverted()
-        light("wrist_key", "POINT", tuple(wr + Vector((0.15, -0.25, 0.25))), 1.5, kelvin(2200), size=0.15).visible_camera = False
-        camera("cam", tuple(wr + Vector((0.25, -0.25, 0.12))), tuple(wr), lens=85, fstop=2.0)
+        bpy.ops.mesh.primitive_torus_add(major_radius=0.034, minor_radius=0.0045, major_segments=40, minor_segments=10); t = bpy.context.object
+        t.data.materials.append(mat("wound", (0.16, 0.012, 0.012), 0.55)); t.parent = rig["wrR"]; t.location = (0, 0, -0.022); t.scale = (0.95, 0.8, 2.0)
+        light("wrist_key", "POINT", tuple(wr + Vector((0.25, -0.05, 0.3))), 0.25, kelvin(2100), size=0.12).visible_camera = False
+        dg = bpy.context.evaluated_depsgraph_get(); eo = rig["body"].evaluated_get(dg); me = eo.to_mesh(); gi = rig["body"].vertex_groups["wrist.R"].index
+        hp = [v.co.copy() for v in me.vertices if any(g.group == gi and g.weight > 0.6 for g in v.groups)]; eo.to_mesh_clear()
+        hc = sum(hp, Vector((0, 0, 0))) / len(hp); print("HAND", tuple(round(x, 3) for x in hc), "WR", tuple(round(x, 3) for x in wr))
+        camera("cam", tuple(hc + Vector((0.36, 0.26, 0.24))), tuple(hc), lens=50, fstop=5.6)
     elif sid == "s30":
         A = room(1.0, dawn=True); ch = A["arthur_chair"]; ch.location = (0.25, -1.05, 0); ch.rotation_euler = (0, 0, R(18))
         camera("cam", (2.5, -2.4, 2.1), (-0.6, 0.5, 1.0), lens=22)
@@ -262,6 +271,7 @@ def shot_build(sid, mode):
         A = room(1.2, dawn=True); so = A["sill_out"]; bpy.data.objects["moon"].data.energy = 700; bpy.data.objects["moon"].location.x -= 1.5
         rv = raven.build(tuple(so + Vector((0, 0, 0.02))), R(-90), name="raven"); L = ["raven"]; held = ["study"]
         raven.head_moves(rv, FPS, 10.5, seed=11, calm=0.4)
+        raven_lights(so, (-1.5, -0.4, 1.2), k=0.8)
         t0, d = line_at("s33", "C5"); raven.speak(rv, FPS, t0, d)
         raven.flap(rv, FPS, 13.0, n=10)
         r0 = rv["root"]; r0.keyframe_insert("location", frame=int(13.0 * FPS))
@@ -304,9 +314,15 @@ def insert_build(name):
         wr = rig["wrR"].matrix_world.translation.copy()
         camera("cam", tuple(wr + Vector((0.35, -0.35, 0.05))), tuple(wr + Vector((0, 0.08, -0.05))), lens=70, fstop=2.0)
 
+def raven_lights(pos, cam, warm=False, k=1.0):
+    """Contraluz frio + luz suave de recorte para a plumagem do corvo ler bem."""
+    p = Vector(pos) + Vector((0, 0, 0.25)); cv = (Vector(cam) - p); cv.z = 0; cv.normalize(); side = Vector((-cv.y, cv.x, 0))
+    r = light("raven_rim", "AREA", tuple(p - cv * 1.1 + side * 0.5 + Vector((0, 0, 0.7))), 55 * k, kelvin(10500), size=0.5); look_at(r, tuple(p)); r.visible_camera = False; r.visible_transmission = False; r.visible_glossy = False
+    ky = light("raven_key", "AREA", tuple(p + cv * 1.0 - side * 0.9 + Vector((0, 0, 0.35))), 9 * k, kelvin(2300 if warm else 8000), size=0.8); look_at(ky, tuple(p)); ky.visible_camera = False; ky.visible_transmission = False; ky.visible_glossy = False
+
 def silhouette():
     """Humanos sempre em silhueta: troca todos os materiais deles por um preto fosco."""
-    sil = mat("silhouette_fig", (0.004, 0.004, 0.005), 0.75)
+    sil = mat("silhouette_fig", (0.0015, 0.0015, 0.002), 0.9, spec=0.0)
     for cn in ("arthur", "eleanor"):
         cc = bpy.data.collections.get(cn)
         for o in (cc.objects if cc else []):
@@ -326,8 +342,6 @@ def main():
     t0 = time.time()
     if mode == "preview":
         if layers and ("arthur" in layers or "eleanor" in layers):
-            for o in bpy.data.objects:
-                if o.type == "LIGHT" and o.name.startswith("candle_light"): o.data.energy *= 0.15
             silhouette()
         quality(samples or 12, True, res=0.3); sc.frame_set(int(dur * FPS * 0.6))
         render(f"{ROOT}/renders/preview/{sid}.png")
@@ -341,7 +355,7 @@ def main():
         if "arthur" in layers or "eleanor" in layers:   # personagens humanos sempre em silhueta (sem luz de vela)
             silhouette()
             for o in bpy.data.objects:
-                if o.type == "LIGHT" and o.name.startswith(("candle_light", "clock_fill", "sconce_l")): o.hide_render = True
+                pass
         for v in ("fog_volume", "window_glass"):
             if v in bpy.data.objects: bpy.data.objects[v].hide_render = True
         quality(samples or 12, True, transparent=True, res=0.5); sc.render.use_persistent_data = True
