@@ -40,6 +40,10 @@ def room(exposure=1.2, dawn=False, window_open=False):
         for fl, L in A["candles"]: fl.hide_render = True; L.hide_render = True
         m = bpy.data.objects["moon"]; m.data.energy = 2200; m.data.color = kelvin(7500)
         world_color((0.03, 0.04, 0.05), 1.0)
+        w = A["window"]
+        for nm, off, e, sz in [("dawn_fill", (0.5, 0, 0), 140, 1.6), ("dawn_bounce", (3.0, 0, 1.2), 35, 3.0)]:
+            lo = light(nm, "AREA", (w.x + off[0], w.y + off[1], w.z + off[2]), e, kelvin(7800), size=sz, rot=(0, R(-90) if nm == "dawn_fill" else 0, 0))
+            lo.visible_camera = False; lo.visible_glossy = nm != "dawn_fill"
     if window_open:
         bpy.data.objects["window_glass"].hide_render = True
     bpy.context.view_layer.update()
@@ -174,6 +178,8 @@ def shot_build(sid, mode):
             for k in range(int(dur * FPS)):
                 lt.location = (0.05 + r.uniform(-0.002, 0.002), -0.12 + r.uniform(-0.002, 0.002), 1.0 + r.uniform(-0.002, 0.002)); lt.keyframe_insert("location", frame=k)
             camera("cam", (0.06, -0.62, 1.12), (0.05, -0.1, 1.0), lens=50, fstop=2.0)
+        elif sid == "s31":
+            camera("cam", (0.10, -0.40, 1.02), (0.03, -0.12, 0.81), lens=50, fstop=2.8)
         else:
             camera("cam", (0.12, -0.38, 1.12), (0.05, -0.02, 0.81), lens=50, fstop=2.8)
     elif sid == "s17b":
@@ -246,6 +252,7 @@ def shot_build(sid, mode):
         wr = rig["wrR"].matrix_world.translation.copy()
         tor = bpy.ops.mesh.primitive_torus_add(major_radius=0.034, minor_radius=0.004, location=wr); t = bpy.context.object
         t.data.materials.append(mat("wound", (0.25, 0.02, 0.02), 0.6)); t.parent = rig["wrR"]; t.matrix_parent_inverse = rig["wrR"].matrix_world.inverted()
+        light("wrist_key", "POINT", tuple(wr + Vector((0.15, -0.25, 0.25))), 1.5, kelvin(2200), size=0.15).visible_camera = False
         camera("cam", tuple(wr + Vector((0.25, -0.25, 0.12))), tuple(wr), lens=85, fstop=2.0)
     elif sid == "s30":
         A = room(1.0, dawn=True); ch = A["arthur_chair"]; ch.location = (0.25, -1.05, 0); ch.rotation_euler = (0, 0, R(18))
