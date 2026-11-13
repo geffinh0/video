@@ -13,3 +13,26 @@
 11. **Foto do casal**: desfocada, em sépia, com o rosto de Eleanor apagado pelo tempo (reforça o mistério e esconde o limite dos modelos).
 12. **Camadas** em meia resolução (960×400) e 12 fps, ampliadas na montagem: ~4 s/quadro em vez de ~15 s.
 13. **Luar**: as luzes do luar são invisíveis para câmera, reflexos e transmissão (senão estouravam através do vidro).
+
+## 14. 30 fps em tudo
+A pedido, o filme e as camadas animadas passaram de 24/12 fps para 30 fps (`roteiro/shots.json`, `blender/shots.py`, `remotion/src/timing.ts`).
+
+## 15. Corvo com plumagem em malha
+Partículas (hair + instância) ficaram lentas e sem controle de escala. As penas são geradas como uma malha única por
+`raven._plumage` (amostra a superfície, deita cada pena na direção desejada). Patas com dedos e garras em skin.
+
+## 16. Humanos: só silhueta, sobre a malha base do MakeHuman (CC0)
+Rostos e roupas feitos por código não chegaram a um nível aceitável. Decisão do usuário: Arthur e Eleanor aparecem
+apenas em silhueta/sombra. O contorno vem de `pouso/mh.py`, que lê SOMENTE os dados CC0 do MakeHuman/MPFB2
+(malha hm08, alvos, esqueleto, pesos); nenhum código do MPFB é executado. Pivôs (empties) dirigem os ossos por
+COPY_TRANSFORMS; `shots.silhouette()` troca os materiais por preto fosco sem especular.
+
+## 17. Cenários com peças do Poly Haven (CC0) regraduadas
+Móveis, texturas PBR e HDRI vêm do Poly Haven (`scripts/assets.py`, pasta ignorada no git). Cada peça passa por
+`core.asset(..., tint, value, sat)` para entrar na paleta do filme. Arquitetura (escritório, corredor, mansão),
+corvo, carta, retrato, luz e câmera são desenho próprio. A mansão foi redesenhada (torre com mansarda, torreão,
+bay window, portão de ferro).
+
+## 18. Render distribuído
+`scripts/worker.sh <shots>` renderiza camadas em outra máquina, codifica em VP9 com alfa (`layers_enc/<shot>.webm`)
+e publica no branch. `scripts/unpack_layers.sh` devolve os PNGs para a montagem. Fundos são renderizados localmente.
