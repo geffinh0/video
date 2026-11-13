@@ -298,3 +298,85 @@ def render(path, frame=None):
     sc.render.image_settings.file_format = "PNG"
     sc.render.image_settings.color_mode = "RGBA" if sc.render.film_transparent else "RGB"
     bpy.ops.render.render(write_still=True)
+
+# ---------------- assets livres (Poly Haven, CC0) adaptados à paleta do filme ----------------
+import os as _os
+ASSETS = _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__)))), "assets/polyhaven")
+
+def _grade(m, tint=(1, 1, 1), value=1.0, sat=1.0, rough=None, tag=""):
+    """Reinterpreta um material importado: multiplica a cor base (tint), ajusta valor/saturação e aspereza."""
+    b = _bsdf(m)
+    if b is None: return
+    L = m.node_tree.links; inp = b.inputs["Base Color"]
+    hs = _n(m, "ShaderNodeHueSaturation"); hs.inputs["Saturation"].default_value = sat; hs.inputs["Value"].default_value = value
+    mx = _n(m, "ShaderNodeMix", data_type="RGBA", blend_type="MULTIPLY"); mx.inputs[0].default_value = 1.0; mx.inputs[7].default_value = (*tint, 1)
+    if inp.is_linked:
+        src = inp.links[0].from_socket; L.remove(inp.links[0]); L.new(src, hs.inputs["Color"])
+    else: hs.inputs["Color"].default_value = inp.default_value[:]
+    L.new(hs.outputs[0], mx.inputs[6]); L.new(mx.outputs[2], inp)
+    if rough is not None:
+        r = b.inputs["Roughness"]
+        if r.is_linked:
+            src = r.links[0].from_socket; L.remove(r.links[0])
+            mr = _n(m, "ShaderNodeMath", operation="MULTIPLY"); mr.use_clamp = True; L.new(src, mr.inputs[0]); mr.inputs[1].default_value = rough; L.new(mr.outputs[0], r)
+        else: r.default_value = min(1, r.default_value * rough)
+
+def asset(name, loc=(0, 0, 0), rot_z=0.0, scale=1.0, coll=None, parent=None, tint=(1, 1, 1), value=1.0, sat=1.0, rough=None, key=None):
+    """Importa um modelo glTF do Poly Haven e devolve (empty raiz, {nome: objeto}).
+    Cada uso ganha materiais próprios regraduados (tint/value/sat) para a paleta do filme."""
+    f = f"{ASSETS}/models/{name}/{name}.gltf"; before = set(bpy.data.objects)
+    bpy.ops.import_scene.gltf(filepath=f)
+    new = [o for o in bpy.data.objects if o not in before]
+    c = coll or bpy.context.scene.collection; key = key or f"{name}_{len(bpy.data.objects)}"
+    root = empty(key, loc, (0, 0, rot_z), parent=parent, coll=c); root.scale = (scale,) * 3
+    done = {}
+    for o in new:
+        for oc in list(o.users_collection): oc.objects.unlink(o)
+        c.objects.link(o)
+        if o.parent is None: o.parent = root
+        if o.type == "MESH":
+            for sl in o.material_slots:
+                if sl.material is None: continue
+                if sl.material.name not in done:
+                    m = sl.material.copy(); m.name = f"{key}_{sl.material.name}"; _grade(m, tint, value, sat, rough); done[sl.material.name] = m
+                sl.material = done[sl.material.name]
+    return root, {o.name.split(".")[0]: o for o in new}
+
+def mat_pbr(name, tex, scale=1.0, tint=(1, 1, 1), value=1.0, sat=1.0, rough=1.0, bump=1.0, rot=0.0):
+    """Material PBR com texturas reais (Poly Haven), projeção em caixa nas coordenadas do objeto (sem UV)."""
+    m = bpy.data.materials.get(name)
+    if m: return m
+    m = mat(name, (0.5, 0.5, 0.5), 0.6); b = _bsdf(m); L = m.node_tree.links; d = f"{ASSETS}/textures/{tex}"
+    tc = _n(m, "ShaderNodeTexCoord"); mp = _n(m, "ShaderNodeMapping"); mp.inputs["Scale"].default_value = (scale,) * 3; mp.inputs["Rotation"].default_value = (0, 0, rot)
+    L.new(tc.outputs["Object"], mp.inputs[0])
+    def img(fn, cs):
+        for ext in ("jpg", "png"):
+            p = f"{d}/{fn}.{ext}"
+            if _os.path.exists(p):
+                n = _n(m, "ShaderNodeTexImage"); n.image = bpy.data.images.load(p, check_existing=True); n.image.colorspace_settings.name = cs
+                n.projection = "BOX"; n.projection_blend = 0.25; L.new(mp.outputs[0], n.inputs["Vector"]); return n
+    di = img("diff", "sRGB")
+    if di:
+        hs = _n(m, "ShaderNodeHueSaturation"); hs.inputs["Saturation"].default_value = sat; hs.inputs["Value"].default_value = value; L.new(di.outputs["Color"], hs.inputs["Color"])
+        mx = _n(m, "ShaderNodeMix", data_type="RGBA", blend_type="MULTIPLY"); mx.inputs[0].default_value = 1.0; mx.inputs[7].default_value = (*tint, 1)
+        L.new(hs.outputs[0], mx.inputs[6]); L.new(mx.outputs[2], b.inputs["Base Color"])
+    ri = img("rough", "Non-Color")
+    if ri:
+        mr = _n(m, "ShaderNodeMath", operation="MULTIPLY"); mr.use_clamp = True; mr.inputs[1].default_value = rough; L.new(ri.outputs["Color"], mr.inputs[0]); L.new(mr.outputs[0], b.inputs["Roughness"])
+    ni = img("nor", "Non-Color")
+    if ni:
+        nm = _n(m, "ShaderNodeNormalMap"); nm.inputs["Strength"].default_value = bump; nm.space = "OBJECT" if False else "TANGENT"
+        # projeção em caixa não tem tangentes: usa o relevo (disp) como bump, mais robusto
+    hi = img("disp", "Non-Color")
+    if hi:
+        bp = _n(m, "ShaderNodeBump", Strength=0.35 * bump, Distance=0.01); L.new(hi.outputs["Color"], bp.inputs["Height"]); L.new(bp.outputs[0], b.inputs["Normal"])
+    return m
+
+def world_hdri(name, strength=1.0, rot_z=0.0, tint=(1, 1, 1)):
+    """Céu noturno real (HDRI Poly Haven) como luz ambiente."""
+    w = bpy.context.scene.world; nt = w.node_tree; bg = nt.nodes.get("Background")
+    env = nt.nodes.new("ShaderNodeTexEnvironment"); env.image = bpy.data.images.load(f"{ASSETS}/hdris/{name}.hdr", check_existing=True)
+    tc = nt.nodes.new("ShaderNodeTexCoord"); mp = nt.nodes.new("ShaderNodeMapping"); mp.inputs["Rotation"].default_value = (0, 0, rot_z)
+    nt.links.new(tc.outputs["Generated"], mp.inputs[0]); nt.links.new(mp.outputs[0], env.inputs[0])
+    mx = nt.nodes.new("ShaderNodeMix"); mx.data_type = "RGBA"; mx.blend_type = "MULTIPLY"; mx.inputs[0].default_value = 1.0; mx.inputs[7].default_value = (*tint, 1)
+    nt.links.new(env.outputs[0], mx.inputs[6]); nt.links.new(mx.outputs[2], bg.inputs[0]); bg.inputs[1].default_value = strength

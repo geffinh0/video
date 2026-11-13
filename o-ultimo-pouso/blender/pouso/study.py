@@ -38,10 +38,20 @@ def build(tex_dir, with_arthur_chair=True):
     global TEX; TEX = tex_dir
     c = coll("study")
     R = ROOM
-    wood = mat_wood("dark_wood"); wood2 = mat_wood("walnut", (0.07, 0.03, 0.012), (0.16, 0.075, 0.03), 5.0, 0.4, 0.3)
+    wood = mat_pbr("dark_wood", "dark_wood", 1.2, tint=(0.55, 0.42, 0.36), value=0.55, sat=0.8, rough=0.85)
+    wood2 = mat_pbr("walnut", "wood_table_001", 1.5, tint=(0.75, 0.5, 0.4), value=0.6, sat=0.85, rough=0.7)
     paper_wall = mat_wallpaper("wallpaper")
-    floor = mat_planks("floor")
-    ceil = mat_noise("ceiling", (0.03, 0.03, 0.028), (0.06, 0.055, 0.05), 3, rough=0.9)
+    floor = mat_pbr("floor", "wood_floor_deck", 0.7, tint=(0.6, 0.48, 0.42), value=0.4, sat=0.55, rough=0.8)
+    ceil = mat_pbr("ceiling", "plastered_wall", 0.5, tint=(0.5, 0.48, 0.44), value=0.35, sat=0.5)
+    def piece(name, loc, rot_z=0.0, scale=1.0, part=None, parent=None, **kw):
+        """Peça do Poly Haven regraduada. part: mantém só o objeto com esse nome e o centraliza."""
+        r, obs = asset(name, loc, rot_z, scale, coll=c, parent=parent, **kw)
+        if part:
+            for k, o in obs.items():
+                if k == part: o.location = (0, 0, 0)
+                else: bpy.data.objects.remove(o)
+            obs = {part: obs[part]}
+        return r, obs
     brass = mat("brass", (0.55, 0.38, 0.15), 0.35, 1.0)
     stone = mat_noise("stone", (0.08, 0.08, 0.085), (0.2, 0.2, 0.21), 5, rough=0.85, bump=0.4)
     # piso, teto, rodapé
@@ -98,7 +108,7 @@ def build(tex_dir, with_arthur_chair=True):
     mr = light("moon_rim", "AREA", (-6, 3.5, 2.5), 300, kelvin(11000), size=3, coll=c); mr.rotation_euler = (0, math.radians(-90), 0)
     for o_ in (mo, mr): o_.visible_camera = False; o_.visible_glossy = False; o_.visible_transmission = False
     # cortinas (veludo vinho) com dobras
-    velvet = mat_noise("velvet", (0.025, 0.002, 0.004), (0.06, 0.006, 0.01), 30, rough=0.8, bump=0.05)
+    velvet = mat_pbr("velvet", "velour_velvet", 3.0, tint=(0.32, 0.02, 0.04), value=0.3, sat=1.0)
     for side in (-1, 1):
         bpy.ops.mesh.primitive_grid_add(x_subdivisions=40, y_subdivisions=12, size=1)
         cu = bpy.context.object; cu.name = f"curtain{side}"; cu.scale = (0.5, 3.0, 1)
@@ -109,7 +119,7 @@ def build(tex_dir, with_arthur_chair=True):
         bpy.ops.object.shade_smooth(); cu.data.materials.append(velvet); _move(cu, c)
     cyl("curtain_rod", 0.018, 2.0, (R["x0"] + 0.12, wy, 3.12), brass, rot=(math.radians(90), 0, 0), coll=c)
     # tapete
-    rug = mat_noise("rug", (0.12, 0.02, 0.015), (0.25, 0.09, 0.03), 14, rough=0.95, bump=0.1)
+    rug = mat_pbr("rug", "fabric_pattern_07", 1.6, tint=(0.55, 0.12, 0.1), value=0.45, sat=0.9)
     box("rug", (3.6, 2.6, 0.012), (0.1, 0.1, 0.006), rug, coll=c)
     # escrivaninha
     D = empty("desk", (0, 0.15, 0), coll=c); A["desk"] = Vector((0, 0.15, 0.78))
@@ -141,19 +151,18 @@ def build(tex_dir, with_arthur_chair=True):
     flame = mat_emit("flame", kelvin(1700), 60)
     A["candles"] = []
     for i, (x, y) in enumerate([(0.62, 0.42), (-0.55, 0.45)]):
-        cyl(f"cstick_base{i}", 0.07, 0.02, (x, y, 0.815), brass, coll=c)
-        cyl(f"cstick_stem{i}", 0.015, 0.16, (x, y, 0.9), brass, coll=c)
-        cyl(f"cstick_cup{i}", 0.035, 0.03, (x, y, 0.985), brass, coll=c)
-        hgt = 0.18 if i == 0 else 0.11
-        cyl(f"candle{i}", 0.022, hgt, (x, y, 1.0 + hgt / 2), wax, coll=c)
-        fz = 1.0 + hgt + 0.03
-        fl = sphere(f"flame{i}", 0.012, (x, y, fz), flame, scale=(1, 1, 2.6), seg=16, coll=c)
+        piece("brass_candleholders", (x, y, 0.805), rot_z=i * 1.3, scale=0.62 if i == 0 else 0.5, part="brass_candleholder_01", tint=(0.8, 0.62, 0.4), value=0.8, key=f"cstick{i}")
+        top = 0.805 + 0.366 * (0.62 if i == 0 else 0.5) - 0.012
+        hgt = 0.16 if i == 0 else 0.09
+        cyl(f"candle{i}", 0.014, hgt, (x, y, top + hgt / 2), wax, coll=c)
+        for k in range(3): sphere(f"drip{i}{k}", 0.006, (x + 0.012 * math.cos(k * 2.1), y + 0.012 * math.sin(k * 2.1), top + hgt * (0.35 + 0.2 * k)), wax, scale=(1, 1, 2.2), seg=10, coll=c)
+        fz = top + hgt + 0.022
+        fl = sphere(f"flame{i}", 0.009, (x, y, fz), flame, scale=(1, 1, 2.8), seg=16, coll=c)
         L = light(f"candle_light{i}", "POINT", (x, y, fz + 0.02), 45 if i == 0 else 30, kelvin(1800), size=0.015, coll=c)
         A["candles"].append((fl, L))
-    # livros na mesa
-    for i in range(4):
-        col = random.choice([(0.12, 0.03, 0.02), (0.04, 0.06, 0.04), (0.08, 0.05, 0.03), (0.05, 0.04, 0.06)])
-        box(f"deskbook{i}", (0.18, 0.25, 0.045), (-0.62, 0.05, 0.825 + i * 0.047), mat_noise(f"leather{i}", col, tuple(min(1, v * 2) for v in col), 20, rough=0.6), rot=(0, 0, random.uniform(-0.15, 0.15)), coll=c)
+    # livros na mesa (enciclopédia envelhecida) e óculos de Arthur
+    piece("book_encyclopedia_set_01", (-0.78, 0.2, 0.805), rot_z=math.radians(78), scale=0.85, tint=(0.6, 0.42, 0.35), value=0.55, sat=0.7, key="deskbooks")
+    piece("round_spectacles", (0.2, -0.12, 0.807), rot_z=math.radians(200), tint=(0.9, 0.8, 0.6), key="spectacles")
     # porta-retrato (foto aplicada depois)
     frm = mat("frame_silver", (0.4, 0.38, 0.35), 0.3, 1.0)
     pf = empty("photo_frame", (-0.35, 0.38, 0.8), (math.radians(-12), 0, math.radians(15)), coll=c)
@@ -167,16 +176,9 @@ def build(tex_dir, with_arthur_chair=True):
     # cadeiras
     if with_arthur_chair:
         ch = empty("arthur_chair", (0, -0.75, 0), coll=c); A["arthur_chair"] = ch
-        box("ach_seat", (0.5, 0.48, 0.06), (0, 0, 0.47), wood, parent=ch, coll=c)
-        box("ach_back", (0.5, 0.05, 0.32), (0, -0.25, 0.66), wood, parent=ch, coll=c)
-        for sx in (-1, 1):
-            for sy in (-1, 1): box(f"ach_leg{sx}{sy}", (0.04, 0.04, 0.45), (sx * 0.22, sy * 0.2, 0.22), wood, parent=ch, coll=c)
+        piece("dining_chair_02", (0, 0.02, 0), rot_z=math.radians(180), scale=1.0, parent=ch, tint=(0.4, 0.2, 0.16), value=0.5, sat=0.8, key="ach")
     ech = empty("eleanor_chair", (0, 1.05, 0), coll=c); A["eleanor_chair"] = Vector((0, 1.05, 0.48))
-    box("ech_seat", (0.62, 0.58, 0.12), (0, 0, 0.45), velvet, bevel=0.03, parent=ech, coll=c)
-    box("ech_back", (0.62, 0.12, 0.85), (0, 0.28, 0.9), velvet, bevel=0.04, parent=ech, coll=c)
-    for sx in (-1, 1):
-        box(f"ech_arm{sx}", (0.08, 0.55, 0.25), (sx * 0.33, 0.03, 0.62), velvet, bevel=0.03, parent=ech, coll=c)
-        for sy in (-1, 1): cyl(f"ech_leg{sx}{sy}", 0.025, 0.4, (sx * 0.27, sy * 0.24, 0.2), wood, parent=ech, coll=c)
+    piece("ArmChair_01", (0, 0.05, 0), rot_z=0.0, scale=1.0, parent=ech, tint=(0.42, 0.035, 0.06), value=0.55, sat=1.0, rough=1.1, key="ech")
     # estantes de livros (parede x+ e fundo à esquerda)
     def shelf(x, y, w, rot_z, n_sh=6):
         g = empty(f"shelf_{x}_{y}", (x, y, 0), (0, 0, rot_z), coll=c)
@@ -196,18 +198,26 @@ def build(tex_dir, with_arthur_chair=True):
         return g
     shelf(2.78, -0.9, 1.6, math.radians(90))
     shelf(2.78, 0.9, 1.6, math.radians(90))
-    shelf(-1.0, 2.38, 1.4, math.radians(180))
+    piece("GothicCabinet_01", (-0.95, 2.02, 0), rot_z=0.0, tint=(0.5, 0.33, 0.27), value=0.5, sat=0.75, key="gcabinet")
+    piece("brass_candleholders", (-0.95, 2.0, 2.36), rot_z=0.4, scale=0.8, part="brass_candleholder_03", tint=(0.7, 0.55, 0.35), value=0.7, key="candelabra")
+    # canto da janela: cômoda gótica com lampião, busto de mármore e vaso
+    piece("GothicCommode_01", (-2.68, -1.55, 0), rot_z=math.radians(90), tint=(0.5, 0.33, 0.27), value=0.5, sat=0.75, key="commode")
+    piece("vintage_oil_lamp", (-2.66, -1.2, 1.21), tint=(0.8, 0.65, 0.45), value=0.7, key="oillamp")
+    piece("marble_bust_01", (-2.68, -1.85, 1.21), rot_z=math.radians(70), tint=(0.75, 0.74, 0.7), value=0.6, sat=0.4, key="bust")
+    piece("side_table_tall_01", (2.55, 2.2, 0), tint=(0.45, 0.3, 0.25), value=0.5, key="sidetable")
+    piece("antique_ceramic_vase_01", (2.55, 2.2, 0.76), tint=(0.5, 0.55, 0.6), value=0.6, sat=0.6, key="vase")
+    piece("Chandelier_03", (0.0, 0.3, R["h"] - 0.12), scale=1.25, tint=(0.6, 0.5, 0.35), value=0.6, key="chandelier")
+    piece("ornate_mirror_01", (0.5, R["y1"] - 0.02, 2.0), rot_z=0.0, scale=1.5, tint=(0.75, 0.6, 0.35), value=0.6, key="mirror")
     # relógio de pêndulo (canto do fundo, perto da janela)
     ck = empty("clock", (-2.35, 2.28, 0), (0, 0, 0), coll=c); A["clock"] = ck
-    box("ck_base", (0.55, 0.35, 0.5), (0, 0, 0.25), wood2, parent=ck, coll=c)
-    box("ck_trunk", (0.42, 0.28, 1.25), (0, 0, 1.12), wood2, parent=ck, coll=c)
-    box("ck_hood", (0.55, 0.36, 0.6), (0, 0, 2.05), wood2, parent=ck, coll=c)
-    box("ck_crown", (0.6, 0.38, 0.12), (0, 0, 2.4), wood, parent=ck, coll=c)
-    face = mat_image("clock_face", f"{TEX}/clock_face.png", 0.6)
-    cf = cyl("ck_face", 0.2, 0.01, (0, -0.185, 2.05), face, rot=(math.radians(90), 0, 0), verts=48, parent=ck, coll=c)
+    _, cko = piece("vintage_grandfather_clock_01", (0, 0, 0), scale=1.08, parent=ck, tint=(0.55, 0.36, 0.3), value=0.55, sat=0.8, key="gclock")
+    for nm, dlt in (("vintage_grandfather_clock_01_HourHand", 140.5), ("vintage_grandfather_clock_01_MinuteHand", -114.0)):
+        h = cko[nm]; h.rotation_mode = "XYZ"; h.rotation_euler = (0, math.radians(dlt), 0)
+    A["clock_hands"] = (cko["vintage_grandfather_clock_01_HourHand"], cko["vintage_grandfather_clock_01_MinuteHand"])
+    cf = empty("ck_face", (0, -0.14, 1.732 * 1.08), parent=ck, coll=c)
     A["clock_face"] = cf
-    box("ck_glass", (0.3, 0.005, 0.9), (0, -0.145, 1.12), mat("clock_glass", (0.8, 0.8, 0.8), 0.05, transmission=1.0), parent=ck, coll=c)
-    pv = empty("pendulum", (0, -0.1, 1.68), parent=ck, coll=c); A["pendulum"] = pv
+    bpy.data.materials.get("clock_face") or mat_image("clock_face", f"{TEX}/clock_face.png", 0.6)
+    pv = empty("pendulum", (0, 0.0, 1.5), parent=ck, coll=c); A["pendulum"] = pv
     cyl("pend_rod", 0.006, 0.75, (0, 0, -0.38), brass, parent=pv, coll=c)
     cyl("pend_bob", 0.075, 0.02, (0, 0, -0.76), brass, rot=(math.radians(90), 0, 0), parent=pv, coll=c)
     # porta do fundo (animável: dobradiça em x=dx0)
@@ -226,9 +236,10 @@ def build(tex_dir, with_arthur_chair=True):
     # quadros na parede
     paint = mat_noise("painting", (0.02, 0.018, 0.012), (0.09, 0.07, 0.04), 2.5, rough=0.4, bump=0.05)
     gold = mat("gilt", (0.35, 0.24, 0.08), 0.35, 1.0)
-    for i, (y, z, w, h) in enumerate([(-1.6, 2.0, 0.6, 0.8), (-0.6, 2.2, 0.45, 0.55)]):
-        box(f"pframe{i}", (0.04, w + 0.1, h + 0.1), (R["x0"] + 0.03, y, z), gold, coll=c)
-        box(f"pcanvas{i}", (0.045, w, h), (R["x0"] + 0.035, y, z), paint, coll=c)
+    for i, (y, z, sc, nm) in enumerate([(-1.55, 2.25, 1.5, "fancy_picture_frame_02"), (-0.55, 2.3, 1.0, "fancy_picture_frame_01")]):
+        _, fo = piece(nm, (R["x0"] + 0.02, y, z), rot_z=math.radians(90), scale=sc, tint=(0.7, 0.55, 0.3), value=0.6, key=f"pframe{i}")
+        cv = fo.get(nm + "_canvas")
+        if cv: cv.data.materials.clear(); cv.data.materials.append(paint)
     # preenchimento muito fraco (para não perder totalmente as sombras)
     world_color((0.004, 0.006, 0.01), 1.0)
     return A
