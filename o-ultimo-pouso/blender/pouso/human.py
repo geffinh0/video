@@ -144,22 +144,27 @@ def build(kind="arthur", loc=(0, 0, 0), rot_z=0.0, coll_name=None):
     spine = empty(f"{kind}_spine", (0, 0, 0.08 * H), parent=hips, coll=c)
     # tronco (sobrecasaca / corpete)
     chain(f"{kind}_torso", [(0, 0, -0.06), (0, 0.005, 0.1), (0, 0.0, 0.3), (0, -0.005, 0.42)],
-          [(0.17, 0.11), (0.15, 0.1), (0.2, 0.12), (0.2, 0.1)] if kind == "arthur" else [(0.15, 0.1), (0.12, 0.085), (0.16, 0.1), (0.14, 0.09)], coat, c, spine)
+          [(0.175, 0.12), (0.16, 0.108), (0.2, 0.13), (0.17, 0.1)] if kind == "arthur" else [(0.15, 0.1), (0.115, 0.085), (0.16, 0.105), (0.13, 0.085)], coat, c, spine)
+    sw = 0.2 if kind == "arthur" else 0.17
+    chain(f"{kind}_yoke", [(-sw, 0, 0.385), (-sw * 0.5, 0, 0.42), (0, 0, 0.44), (sw * 0.5, 0, 0.42), (sw, 0, 0.385)],
+          [(0.07, 0.075), (0.075, 0.09), (0.075, 0.095), (0.075, 0.09), (0.07, 0.075)] if kind == "arthur" else [(0.06, 0.062), (0.06, 0.075), (0.06, 0.08), (0.06, 0.075), (0.06, 0.062)], coat, c, spine)
     if kind == "arthur":
         # colarinho branco e gravata escura
         cyl(f"{kind}_collar", 0.055, 0.05, (0, 0.012, 0.47), shirt, parent=spine, coll=c)
         box(f"{kind}_cravat", (0.07, 0.02, 0.09), (0, 0.075, 0.4), mat("cravat", (0.01, 0.01, 0.012), 0.5), parent=spine, coll=c, bevel=0.01)
         box(f"{kind}_shirtfront", (0.08, 0.01, 0.16), (0, 0.098, 0.3), shirt, parent=spine, coll=c, bevel=0.004)
         # aba da sobrecasaca (saia até o joelho)
+        chain(f"{kind}_coatcollar", [(-0.07, -0.01, 0.455), (-0.05, -0.055, 0.485), (0, -0.07, 0.495), (0.05, -0.055, 0.485), (0.07, -0.01, 0.455)],
+              [(0.02, 0.035), (0.018, 0.04), (0.018, 0.042), (0.018, 0.04), (0.02, 0.035)], coat, c, spine)
         for sx in (-1, 1):
-            t = chain(f"{kind}_coattail{sx}", [(sx * 0.07, -0.06, 0.0), (sx * 0.09, -0.09, -0.28), (sx * 0.1, -0.1, -0.5)], [(0.1, 0.03), (0.11, 0.02), (0.1, 0.012)], coat, c, hips)
-        chain(f"{kind}_coatfront", [(0, 0.04, 0.02), (0, 0.06, -0.12)], [(0.17, 0.08), (0.15, 0.05)], coat, c, hips)
+            chain(f"{kind}_lapel{sx}", [(sx * 0.065, 0.03, 0.455), (sx * 0.07, 0.095, 0.36), (sx * 0.03, 0.115, 0.22)], [(0.03, 0.014), (0.045, 0.012), (0.02, 0.01)], coat, c, spine)
+        chain(f"{kind}_coatwaist", [(0, 0.0, 0.03), (0, 0.0, -0.1)], [(0.185, 0.13), (0.2, 0.14)], coat, c, hips)
     else:
         cyl(f"{kind}_collar", 0.05, 0.08, (0, 0.0, 0.46), shirt, parent=spine, coll=c)
         sk = cyl(f"{kind}_skirt", 0.48, 0.98, (0, 0, -0.5), coat, r2=0.16, verts=48, parent=hips, coll=c)
         wv = sk.modifiers.new("folds", "WAVE"); wv.use_normal = True; wv.height = 0.015; wv.width = 0.09; wv.speed = 0
     neck = empty(f"{kind}_neck", (0, 0.0, 0.47), parent=spine, coll=c)
-    capsule(f"{kind}_neckm", (0, 0, -0.03), (0, 0.01, 0.08), 0.052 if kind == "arthur" else 0.042, 0.048 if kind == "arthur" else 0.038, skin, c, neck)
+    capsule(f"{kind}_neckm", (0, 0, -0.03), (0, 0.01, 0.08), 0.058 if kind == "arthur" else 0.044, 0.054 if kind == "arthur" else 0.04, skin, c, neck)
     head_p = empty(f"{kind}_headp", (0, 0.02, 0.17), parent=neck, coll=c)
     head = sculpt_head(f"{kind}_head", face, c, head_p, "m" if kind == "arthur" else "f")
     lids = eyes(kind, c, head, iris=(0.1, 0.08, 0.06) if kind == "arthur" else (0.06, 0.08, 0.1))
@@ -172,7 +177,7 @@ def build(kind="arthur", loc=(0, 0, 0), rot_z=0.0, coll_name=None):
         if kind == "eleanor" and y > 0.05 and z < 0.06: keep = False
         if not keep: z = max(z, 0.0); y = min(y, 0.0) if z <= 0 else y
         n = noise.noise(Vector((x * 35, y * 35, z * 22))) * 0.012 + noise.noise(Vector((x * 90, y * 90, z * 90))) * 0.004
-        bulk = 1.08 if kind == 'arthur' else 1.02
+        bulk = 1.13 if kind == 'arthur' else 1.06
         v.co = Vector((x * bulk * (1 + n * 7), y * bulk * (1 + n * 7), z * bulk + abs(n) * 1.5))
     bm = bmesh.new(); bm.from_mesh(hr.data)
     cut = [v for v in bm.verts if (v.co.z < 0.015 and v.co.y > -0.02 and kind == "arthur") or (kind == "eleanor" and v.co.y > 0.055 and v.co.z < 0.07)]
@@ -193,9 +198,11 @@ def build(kind="arthur", loc=(0, 0, 0), rot_z=0.0, coll_name=None):
     piv = {}
     for side, sx in (("L", -1), ("R", 1)):
         sh = empty(f"{kind}_sh{side}", (sx * (0.2 if kind == "arthur" else 0.17), 0, 0.38), parent=spine, coll=c)
-        capsule(f"{kind}_upper{side}", (0, 0, 0.04), (0, 0, -0.31 * H), 0.068, 0.056, coat, c, sh)
+        capsule(f"{kind}_upper{side}", (0, 0, 0.04), (0, 0, -0.31 * H), 0.07, 0.058, coat, c, sh)
+        if kind == "eleanor": sphere(f"{kind}_puff{side}", 0.085, (0, 0, -0.04), coat, scale=(1.0, 1.0, 1.25), seg=24, parent=sh, coll=c)
         el = empty(f"{kind}_el{side}", (0, 0, -0.29 * H), parent=sh, coll=c)
-        capsule(f"{kind}_fore{side}", (0, 0, 0.03), (0, 0, -0.25 * H), 0.056, 0.046, coat, c, el)
+        capsule(f"{kind}_fore{side}", (0, 0, 0.03), (0, 0, -0.25 * H), 0.058, 0.046, coat, c, el)
+        sphere(f"{kind}_elbow{side}", 0.059, (0, 0, 0), coat, seg=20, parent=el, coll=c)
         cyl(f"{kind}_cuff{side}", 0.036, 0.03, (0, 0, -0.245 * H), shirt, parent=el, coll=c)
         wr = empty(f"{kind}_wr{side}", (0, 0, -0.26 * H), parent=el, coll=c)
         chain(f"{kind}_palm{side}", [(0, 0.0, 0.0), (0, 0.004, -0.045), (0, 0.006, -0.085)], [(0.024, 0.014), (0.034, 0.013), (0.036, 0.011)], skin, c, wr)
@@ -208,10 +215,14 @@ def build(kind="arthur", loc=(0, 0, 0), rot_z=0.0, coll_name=None):
         piv[f"sh{side}"], piv[f"el{side}"], piv[f"wr{side}"] = sh, el, wr
         # pernas
         hp_ = empty(f"{kind}_hip{side}", (sx * 0.1, 0, -0.02), parent=hips, coll=c)
-        capsule(f"{kind}_thigh{side}", (0, 0, 0.05), (0, 0, -0.46 * H), 0.095, 0.07, trous, c, hp_)
+        capsule(f"{kind}_thigh{side}", (0, 0, 0.05), (0, 0, -0.46 * H), 0.095, 0.072, trous, c, hp_)
+        if kind == "arthur":   # saia da sobrecasaca: acompanha a coxa (senta sem atravessar a cadeira)
+            chain(f"{kind}_coatskirt{side}", [(sx * 0.0, 0, 0.06), (sx * 0.02, -0.01, -0.2), (sx * 0.03, -0.015, -0.43)], [(0.115, 0.125), (0.125, 0.135), (0.13, 0.14)], coat, c, hp_)
         kn = empty(f"{kind}_kn{side}", (0, 0, -0.44 * H), parent=hp_, coll=c)
-        capsule(f"{kind}_shin{side}", (0, 0, 0.04), (0, 0, -0.43 * H), 0.068, 0.055, trous, c, kn)
-        box(f"{kind}_shoe{side}", (0.09, 0.26, 0.07), (0, 0.06, -0.47 * H), mat("shoe", (0.008, 0.008, 0.008), 0.25, coat=0.6), bevel=0.02, parent=kn, coll=c)
+        capsule(f"{kind}_shin{side}", (0, 0, 0.04), (0, 0, -0.43 * H), 0.07, 0.052, trous, c, kn)
+        sphere(f"{kind}_knee{side}", 0.073, (0, 0, 0), trous, seg=20, parent=kn, coll=c)
+        chain(f"{kind}_shoe{side}", [(0, -0.035, -0.462 * H), (0, 0.06, -0.47 * H), (0, 0.15, -0.482 * H), (0, 0.2, -0.488 * H)],
+              [(0.044, 0.045), (0.047, 0.04), (0.045, 0.028), (0.03, 0.02)], mat("shoe", (0.008, 0.008, 0.008), 0.3, coat=0.5), c, kn)
         piv[f"hip{side}"], piv[f"kn{side}"] = hp_, kn
     return dict(root=root, hips=hips, spine=spine, neck=neck, head=head_p, lids=lids, **piv)
 
