@@ -304,6 +304,15 @@ def insert_build(name):
         wr = rig["wrR"].matrix_world.translation.copy()
         camera("cam", tuple(wr + Vector((0.35, -0.35, 0.05))), tuple(wr + Vector((0, 0.08, -0.05))), lens=70, fstop=2.0)
 
+def silhouette():
+    """Humanos sempre em silhueta: troca todos os materiais deles por um preto fosco."""
+    sil = mat("silhouette_fig", (0.004, 0.004, 0.005), 0.75)
+    for cn in ("arthur", "eleanor"):
+        cc = bpy.data.collections.get(cn)
+        for o in (cc.objects if cc else []):
+            if o.type == "MESH":
+                for sl in o.material_slots: sl.material = sil
+
 def main():
     sid, mode = sys.argv[1], sys.argv[2]
     samples = int(sys.argv[3]) if len(sys.argv) > 3 else None
@@ -319,6 +328,7 @@ def main():
         if layers and ("arthur" in layers or "eleanor" in layers):
             for o in bpy.data.objects:
                 if o.type == "LIGHT" and o.name.startswith("candle_light"): o.data.energy *= 0.15
+            silhouette()
         quality(samples or 12, True, res=0.3); sc.frame_set(int(dur * FPS * 0.6))
         render(f"{ROOT}/renders/preview/{sid}.png")
     elif mode == "plate":
@@ -329,6 +339,7 @@ def main():
         if not layers: print("sem camada"); return
         hold_collections(held)
         if "arthur" in layers or "eleanor" in layers:   # personagens humanos sempre em silhueta (sem luz de vela)
+            silhouette()
             for o in bpy.data.objects:
                 if o.type == "LIGHT" and o.name.startswith(("candle_light", "clock_fill", "sconce_l")): o.hide_render = True
         for v in ("fog_volume", "window_glass"):
