@@ -31,6 +31,19 @@ def pipe(img2img=False):
         p = StableDiffusionXLImg2ImgPipeline(**base.components); p.set_progress_bar_config(disable=True); _pipe["i2i"] = p
     return _pipe[k]
 
+def inpaint(out, prompt, init, box, w=1344, h=768, steps=8, seed=7, guidance=1.5, strength=0.99, neg=NEG, feather=24):
+    """Inpainting com o próprio SDXL base: mantém o resto da imagem idêntico (mesmo enquadramento de CCTV)."""
+    from diffusers import StableDiffusionXLInpaintPipeline
+    from PIL import Image, ImageDraw, ImageFilter
+    if "inp" not in _pipe:
+        p = StableDiffusionXLInpaintPipeline(**pipe().components); p.set_progress_bar_config(disable=True); _pipe["inp"] = p
+    t = time.time(); g = torch.Generator().manual_seed(seed)
+    im = Image.open(init).convert("RGB").resize((w, h))
+    m = Image.new("L", (w, h), 0); ImageDraw.Draw(m).rectangle(box, fill=255); m = m.filter(ImageFilter.GaussianBlur(feather))
+    r = _pipe["inp"](prompt=prompt, negative_prompt=neg, image=im, mask_image=m, width=w, height=h, strength=strength, num_inference_steps=steps, guidance_scale=guidance, generator=g)
+    res = Image.composite(r.images[0], im, m)      # fora da máscara: pixels originais
+    res.save(out); print("GEN", out, round(time.time() - t, 1), "s", flush=True)
+
 def gen(out, prompt, w=1024, h=1024, steps=6, seed=7, guidance=1.5, init=None, strength=0.5, neg=NEG):
     t = time.time(); g = torch.Generator().manual_seed(seed)
     if init:

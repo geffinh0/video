@@ -47,9 +47,10 @@ class Face:
                               checkpoint_S=f"{W}/retargeting_models/stitching_retargeting_module.pth")
         self.w = LivePortraitWrapper(cfg)
         self.lmr = LandmarkRunner(ckpt_path=f"{W}/landmark.onnx", onnx_provider="cpu", device_id=0)
-        img = cv2.cvtColor(cv2.imread(img_path), cv2.COLOR_BGR2RGB); self.img = img
+        img = cv2.cvtColor(cv2.imread(img_path), cv2.COLOR_BGR2RGB) if isinstance(img_path, str) else img_path; self.img = img
         H, Wd = img.shape[:2]
         x0, y0, x1, y1 = face_box or (Wd * 0.25, H * 0.15, Wd * 0.75, H * 0.75)
+        self.box = (x0, y0, x1, y1)
         # landmarks: primeiro num recorte quadrado em volta do rosto conhecido, depois refinado
         cx, cy, s = (x0 + x1) / 2, (y0 + y1) / 2, max(x1 - x0, y1 - y0) * 1.1
         a, b = int(max(0, cx - s / 2)), int(max(0, cy - s / 2)); c, d = int(min(Wd, cx + s / 2)), int(min(H, cy + s / 2))
@@ -66,7 +67,7 @@ class Face:
         self.mask_ori = prepare_paste_back(mask, self.M_c2o, dsize=(Wd, H))
         self.eye0 = float(np.mean(calc_eye_close_ratio(self.lmk_crop[None])))
 
-    def frame(self, blink=0.0, smile=0.0, gaze=(0.0, 0.0), mouth=0.0, yaw=0.0, pitch=0.0, roll=0.0, brow=0.0, crop_only=False):
+    def frame(self, blink=0.0, smile=0.0, gaze=(0.0, 0.0), mouth=0.0, yaw=0.0, pitch=0.0, roll=0.0, brow=0.0, crop_only=False, base=None):
         i = self.info
         e = i["exp"].clone(); e = _apply_expr(e, smile, gaze, brow)
         kp = dict(i); kp["exp"] = e
@@ -84,4 +85,4 @@ class Face:
         out = self.w.warp_decode(self.f_s, self.x_s, x_d)
         crop = self.w.parse_output(out["out"])[0]
         if crop_only: return crop
-        return paste_back(crop, self.M_c2o, self.img, self.mask_ori)
+        return paste_back(crop, self.M_c2o, self.img if base is None else base, self.mask_ori)
