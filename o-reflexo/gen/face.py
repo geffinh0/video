@@ -58,7 +58,7 @@ class Face:
         self.lmk = lmk
         cr = crop_image(img, lmk, dsize=512, scale=2.3, vx_ratio=0, vy_ratio=-0.125, flag_do_rot=True)
         self.M_c2o = cr["M_c2o"]; crop256 = cv2.resize(cr["img_crop"], (256, 256))
-        self.lmk_crop = cr["lmk_crop"]
+        self.lmk_crop = lmk   # razões de olho/boca são invariantes à escala
         x = self.w.prepare_source(crop256)
         self.info = self.w.get_kp_info(x); self.f_s = self.w.extract_feature_3d(x)
         self.x_s = self.w.transform_keypoint(self.info)
@@ -75,7 +75,8 @@ class Face:
         x_d = self.w.stitching(self.x_s, x_d)
         if blink > 0.001:   # retarget de olhos: razão de abertura alvo
             tgt = max(0.0, self.eye0 * (1 - blink))
-            r = torch.tensor([[float(np.mean(calc_eye_close_ratio(self.lmk_crop[None])[0][:1])) , float(calc_eye_close_ratio(self.lmk_crop[None])[0][1]), tgt]], dtype=torch.float32)
+            er = calc_eye_close_ratio(self.lmk_crop[None])[0]
+            r = torch.tensor([[float(er[0]), float(er[1]), tgt]], dtype=torch.float32)
             x_d = x_d + self.w.retarget_eye(self.x_s, r)
         if mouth > 0.001:
             r = torch.tensor([[float(calc_lip_close_ratio(self.lmk_crop[None])[0][0]), mouth * 0.6]], dtype=torch.float32)
