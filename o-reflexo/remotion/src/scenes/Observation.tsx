@@ -4,6 +4,7 @@ import {f} from '../timing';
 import {ArchiveCard} from '../components/ArchiveCard';
 import {SecurityCam} from '../components/devices';
 import {PlateSpace, Seq} from '../components/plate';
+import {MirrorGlass} from '../components/MirrorGlass';
 import {Snd, Sounds} from '../components/AudioLayer';
 
 // S03 — Observação. CAM01 fixa. Clara olha a porta; o reflexo continua olhando para a câmera.
@@ -21,7 +22,7 @@ export const Observation: React.FC = () => (
 		</Sequence>
 		<Sequence from={f(T0)} durationInFrames={f(DUR)}>
 			<SecurityCam date="15/11/2026" time0={0 * 3600 + 17 * 60 + 44} drop={0.008}>
-				<PlateSpace><Seq dir="s03" count={88} fps={4} /></PlateSpace>
+				<PlateSpace><Seq dir="s03" count={88} fps={4} /><MirrorGlass x={612} y={262} w={176} h={350} /></PlateSpace>
 			</SecurityCam>
 		</Sequence>
 		<Sounds list={SND} />

@@ -4,7 +4,7 @@ import {FPS, f} from '../timing';
 import {ArchiveCard} from '../components/ArchiveCard';
 import {SecurityCam} from '../components/devices';
 import {OSD, SliceGlitch, VHS} from '../components/fx';
-import {PlateSpace, Seq} from '../components/plate';
+import {Plate, PlateSpace, Seq} from '../components/plate';
 import {Snd, Sounds} from '../components/AudioLayer';
 
 // S06 — Último registro. Silêncio. CAM01: o banheiro vazio. Só o reflexo. Ele olha para a câmera e sorri.
@@ -16,7 +16,18 @@ const Footage: React.FC = () => {
 	return (
 		<SecurityCam date="15/11/2026" time0={3 * 3600 + 33 * 60 + 2} drop={0.004}>
 			<SliceGlitch amount={lost ? 0.85 : 0} seed="s06">
-				<PlateSpace><Seq dir="s06" count={56} fps={4} hold={lost ? 55 : undefined} /></PlateSpace>
+				<PlateSpace>
+					<Plate name="cctv_empty" />
+					{/* o reflexo, sozinho, dentro do espelho do banheiro vazio — no mesmo lugar do vulto do primeiro arquivo */}
+					<div style={{position: 'absolute', left: 715, top: 145, width: 255, height: 240, overflow: 'hidden'}}>
+						<div style={{position: 'absolute', left: -455, top: -211, width: 1344 * 0.78, height: 768 * 0.78, filter: 'blur(0.8px) brightness(0.97)', WebkitMaskImage: 'radial-gradient(ellipse 50% 66% at 47% 58%, #000 62%, transparent 100%)'}}>
+							<div style={{position: 'absolute', left: 0, top: 0, width: 1344, height: 768, transform: 'scale(0.78)', transformOrigin: '0 0'}}>
+								<Seq dir="s06" count={56} fps={4} hold={lost ? 55 : undefined} />
+							</div>
+						</div>
+						<div style={{position: 'absolute', inset: 0, background: 'linear-gradient(115deg, rgba(255,255,255,0) 20%, rgba(255,255,255,0.12) 28%, rgba(255,255,255,0) 36%)', mixBlendMode: 'screen'}} />
+					</div>
+				</PlateSpace>
 			</SliceGlitch>
 			{u > DUR - 0.45 && <AbsoluteFill style={{background: '#06102a'}}><OSD style={{left: 760, top: 500, fontSize: 40}}>{random(`ns${Math.floor(u * 3)}`) < 0.7 ? 'SEM SINAL' : ''}</OSD></AbsoluteFill>}
 		</SecurityCam>
