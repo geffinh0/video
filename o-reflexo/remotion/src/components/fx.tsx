@@ -79,10 +79,10 @@ export const SliceGlitch: React.FC<{children: React.ReactNode; amount: number; s
 				const y0 = (i / n) * 100, y1 = ((i + 1) / n) * 100;
 				const on = random(`${seed}${fr}-${i}`) < amount;
 				const dx = on ? (random(`${seed}dx${fr}-${i}`) - 0.5) * 220 * amount : 0;
-				const hue = on && random(`${seed}c${fr}-${i}`) < 0.4 ? 'hue-rotate(90deg) saturate(3)' : 'none';
+				const hue = on && random(`${seed}c${fr}-${i}`) < 0.3 ? 'contrast(1.6) brightness(1.3) saturate(0.4)' : 'none';
 				return <AbsoluteFill key={i} style={{clipPath: `inset(${y0}% 0 ${100 - y1}% 0)`, transform: `translateX(${dx}px)`, filter: hue}}>{children}</AbsoluteFill>;
 			})}
-			{random(`${seed}blk${fr}`) < amount * 0.5 && <div style={{position: 'absolute', left: `${random(`${seed}bx${fr}`) * 80}%`, top: `${random(`${seed}by${fr}`) * 80}%`, width: `${10 + random(`${seed}bw${fr}`) * 30}%`, height: `${3 + random(`${seed}bh${fr}`) * 10}%`, background: random(`${seed}bc${fr}`) < 0.5 ? '#0f0' : '#f0f', mixBlendMode: 'difference', opacity: 0.6}} />}
+			{random(`${seed}blk${fr}`) < amount * 0.5 && <div style={{position: 'absolute', left: `${random(`${seed}bx${fr}`) * 80}%`, top: `${random(`${seed}by${fr}`) * 80}%`, width: `${10 + random(`${seed}bw${fr}`) * 30}%`, height: `${3 + random(`${seed}bh${fr}`) * 10}%`, background: random(`${seed}bc${fr}`) < 0.5 ? '#bfbfb8' : '#1a1a1a', mixBlendMode: 'normal', opacity: 0.55}} />}
 		</AbsoluteFill>
 	);
 };

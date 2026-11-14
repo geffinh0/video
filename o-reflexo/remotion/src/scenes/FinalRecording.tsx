@@ -15,7 +15,7 @@ const T0 = 2.5; const MIR = 21; const FALL = T0 + MIR; const FLOOR = FALL + 0.8;
 
 // espelho (coordenadas da imagem-base s05_a): vidro visível à esquerda do cabelo dela
 const GL = {x0: 480, y0: 93, x1: 778, y1: 768};
-const LINES = [{text: 'AGORA É', x: 505, y: 132, size: 31}, {text: 'MINHA', x: 520, y: 196, size: 31}, {text: 'VEZ', x: 545, y: 260, size: 31}];
+const LINES = [{text: 'AGORA', x: 515, y: 118, size: 38}, {text: 'É', x: 600, y: 184, size: 38}, {text: 'MINHA', x: 512, y: 250, size: 38}, {text: 'VEZ', x: 552, y: 316, size: 38}];
 const WRITE0 = 14.0, WRITE1 = 20.6;           // tempo da escrita (u)
 const HAND = {w: 150, tipX: 0.345, tipY: 0.1};  // ponta do indicador na imagem da mão (fração)
 
@@ -53,7 +53,9 @@ const Mirror: React.FC = () => {
 		<div style={{position: 'absolute', left: 0, top: 0, width: 1344, height: 768}}>
 			{/* mão do reflexo, por trás do vapor */}
 			{show && (
-				<Img src={staticFile('assets/plates/hand_alpha.png')} style={{position: 'absolute', width: HAND.w * hScale, left: hx - HAND.w * hScale * HAND.tipX, top: hy - HAND.w * 1.333 * hScale * HAND.tipY, filter: `blur(${hBlur}px) brightness(0.55) sepia(0.2)`, opacity: 0.9 - 0.9 * leave, clipPath: `inset(0 0 0 0)`}} />
+				<div style={{position: 'absolute', left: GL.x0, top: GL.y0, width: GL.x1 - GL.x0, height: GL.y1 - GL.y0, overflow: 'hidden'}}>
+					<Img src={staticFile('assets/plates/hand_alpha.png')} style={{position: 'absolute', width: HAND.w * hScale, left: hx - GL.x0 - HAND.w * hScale * HAND.tipX, top: hy - GL.y0 - HAND.w * 1.333 * hScale * HAND.tipY, filter: `blur(${hBlur}px) brightness(0.5) sepia(0.2)`, opacity: 0.85 - 0.85 * leave}} />
+				</div>
 			)}
 			<svg width={1344} height={768} style={{position: 'absolute', left: 0, top: 0}}>
 				<defs>
@@ -61,8 +63,8 @@ const Mirror: React.FC = () => {
 					<filter id="fogN"><feTurbulence type="fractalNoise" baseFrequency="0.012" numOctaves={3} seed={4} /><feColorMatrix type="matrix" values="0 0 0 0 0.8  0 0 0 0 0.82  0 0 0 0 0.82  0 0 0 1.2 -0.2" /><feGaussianBlur stdDeviation="2" /></filter>
 					<mask id="fogM">
 						<rect x={0} y={0} width={1344} height={768} fill="white" />
-						<StrokeMask strokes={strokes} total={total} progress={prog} width={11} color="black" blur={2.5} />
-						{u > 13.6 && <ellipse cx={start[0] + 6} cy={start[1] + 30} rx={34} ry={46} fill="black" style={{filter: 'blur(9px)'}} opacity={0.75} />}
+						<StrokeMask strokes={strokes} total={total} progress={prog} width={14} color="black" blur={2.5} />
+						{u > 13.6 && <ellipse cx={start[0] + 6} cy={start[1] + 30} rx={34} ry={46} fill="black" style={{filter: 'blur(12px)'}} opacity={0.4} />}
 					</mask>
 				</defs>
 				<g clipPath="url(#glass)" mask="url(#fogM)">
