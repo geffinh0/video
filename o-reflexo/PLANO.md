@@ -65,3 +65,11 @@ o-reflexo/
 6. Prévia → revisão (continuidade, legibilidade, sincronia, artefatos) → render final.
 
 Duração-alvo: ~2:30 (4.500 quadros a 30 fps).
+
+## Resultado (14/11/2026)
+- `renders/final/o-reflexo.mp4` (alta qualidade, 944 MB) e `o-reflexo-leve.mp4` (125 MB, 6 Mbps). 162 s, 1920x1080, 30 fps, AAC estéreo.
+- Rostos: LivePortrait por keypoints sobre imagens SDXL; 6 sequências (s02 405, s03 88, s04 255, s05 315, s05_floor 120, s06 56 quadros),
+  parte renderizada em servidores na nuvem (`gen/anim_worker.sh`, quadros em `frames_enc/`).
+- Render final em blocos de 20 s retomáveis (`gen/render_final.sh`), porque o ambiente reinicia periodicamente.
+- Limites assumidos: identidade da protagonista idêntica nos closes (mesmo retrato) e aproximada nos planos abertos;
+  a mão no vidro é uma camada recortada, sem dedos articulados; câmeras de segurança sem áudio, de propósito.
