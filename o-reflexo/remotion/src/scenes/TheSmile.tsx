@@ -1,5 +1,5 @@
 import React from 'react';
-import {AbsoluteFill, Sequence, useCurrentFrame} from 'remotion';
+import {AbsoluteFill, Img, Sequence, staticFile, useCurrentFrame} from 'remotion';
 import {FPS, f} from '../timing';
 import {ArchiveCard} from '../components/ArchiveCard';
 import {PhoneCam} from '../components/devices';
@@ -14,18 +14,25 @@ const Footage: React.FC = () => {
 	const fr = useCurrentFrame(); const u = fr / FPS;
 	const pull = smooth(u, BACK, BACK + 0.45);                 // câmera recua (o quadro inteiro)
 	const lagged = smooth(u, BACK + 0.55, BACK + 0.9);          // o rosto só acompanha depois
-	const sc = 1 - 0.24 * pull; const scFace = 1 - 0.24 * lagged;
+	const sc = 1.32 - 0.32 * pull; const scFace = 1.32 - 0.32 * lagged;
 	const ghost = u > BACK && u < BACK + 0.95 ? 1 : 0;
 	const cut = u > DUR - 0.1 ? 1 : 0;
 	return (
 		<PhoneCam shake={0.8} focus={0.6} seed="s04" shakeBoost={1.6 * ramp(u, 3.5, 12) + (u > BACK ? 1.2 : 0)} extraBlur={u > BACK && u < BACK + 0.4 ? 3 : 0}>
 			<SliceGlitch amount={cut} seed="s04c">
-				<PlateSpace style={{transform: `scale(${1.4286 * sc}) translate(${-40 * pull}px, ${30 * pull}px)`}}><Seq dir="s04" count={255} fps={15} /></PlateSpace>
+				<AbsoluteFill style={{transform: `scale(${sc}) translate(${-30 * pull}px, ${20 * pull}px)`}}>
+					<PlateSpace><Seq dir="s04" count={255} fps={15} /></PlateSpace>
+				</AbsoluteFill>
 				{ghost > 0 && (
-					<PlateSpace style={{transform: `scale(${1.4286 * scFace})`, clipPath: 'ellipse(26% 52% at 50% 48%)', opacity: 0.92}}>
-						<Seq dir="s04" count={255} fps={15} />
-					</PlateSpace>
+					<AbsoluteFill style={{transform: `scale(${scFace})`, WebkitMaskImage: 'radial-gradient(ellipse 24% 46% at 50% 47%, #000 60%, transparent 100%)', opacity: 0.9}}>
+						<PlateSpace><Seq dir="s04" count={255} fps={15} /></PlateSpace>
+					</AbsoluteFill>
 				)}
+				{/* o vidro: respingos secos e marcas de dedo, acompanham o espelho */}
+				<AbsoluteFill style={{transform: `scale(${sc})`}}>
+					<Img src={staticFile('assets/fx/mirror_dirt.png')} style={{width: '100%', height: '100%', opacity: 0.5, mixBlendMode: 'screen'}} />
+					<AbsoluteFill style={{background: 'linear-gradient(120deg, rgba(255,255,255,0) 30%, rgba(255,255,255,0.07) 42%, rgba(255,255,255,0) 52%)', mixBlendMode: 'screen'}} />
+				</AbsoluteFill>
 			</SliceGlitch>
 		</PhoneCam>
 	);
