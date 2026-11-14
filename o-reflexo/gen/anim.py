@@ -47,7 +47,8 @@ def render(name):
     S = SHOTS[name]; d = f"{OUT}/{name}"; os.makedirs(d, exist_ok=True)
     base = cv2.cvtColor(cv2.imread(f"{PL}/{S['plate']}.png"), cv2.COLOR_BGR2RGB)
     n = int(round(S["dur"] * S["fps"]))
-    todo = [i for i in range(n) if not os.path.exists(f"{d}/{i:04d}.jpg")]
+    a, b = (int(x) for x in os.environ.get("RANGE", f"0:{n}").split(":"))
+    todo = [i for i in range(max(0, a), min(n, b)) if not os.path.exists(f"{d}/{i:04d}.jpg")]
     if not todo: print("SKIP", name); return
     F = [Face(base, f["box"]) for f in S["faces"]]
     cache = [dict() for _ in F]; t0 = time.time()
@@ -60,7 +61,7 @@ def render(name):
             img = paste_back(cache[k][key], f.M_c2o, img, f.mask_ori)
         cv2.imwrite(f"{d}/{i:04d}.jpg", cv2.cvtColor(img, cv2.COLOR_RGB2BGR), [cv2.IMWRITE_JPEG_QUALITY, 92])
         if i % 15 == 0: print(name, i, "/", n, round(time.time() - t0), "s", flush=True)
-    json.dump(dict(count=n, fps=S["fps"]), open(f"{d}/info.json", "w"))
+    if "RANGE" not in os.environ: json.dump(dict(count=n, fps=S["fps"]), open(f"{d}/info.json", "w"))
     print("DONE", name, round(time.time() - t0), "s", flush=True)
 
 import shots_def  # noqa: E402  (define os planos chamando shot(...))
