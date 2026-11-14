@@ -45,7 +45,7 @@ def define(shot, k):
     # ---------------- S05 câmera caída: ela ao fundo vira e encara o celular (15 fps) ----------------
     def s05_floor(u):
         t = ease(u, 2.5, 5.0)
-        return dict(yaw=-14 * t, pitch=7 * t, gaze=(-14 * t, 8 * t), blink=0.0)
+        return dict(yaw=-28 * t, pitch=8 * t, gaze=(-18 * t, 10 * t), blink=0.0)
     shot("s05_floor", "s05_floor", 15, 8, [dict(box=(790, 105, 880, 285), fn=s05_floor)])
 
     # ---------------- S06 ÚLTIMO REGISTRO (CCTV, 4 fps): o reflexo sozinho ----------------
