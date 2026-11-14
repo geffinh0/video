@@ -8,7 +8,7 @@
   "layer": 0
  },
  "ins_hand": {
-  "plate": false,
+  "plate": true,
   "layer": 0
  },
  "ins_key": {
@@ -77,7 +77,7 @@
  },
  "s15": {
   "plate": true,
-  "layer": 0
+  "layer": 360
  },
  "s16": {
   "plate": true,
@@ -117,15 +117,15 @@
  },
  "s25": {
   "plate": true,
-  "layer": 0
+  "layer": 360
  },
  "s26": {
   "plate": true,
-  "layer": 0
+  "layer": 240
  },
  "s27": {
   "plate": true,
-  "layer": 0
+  "layer": 360
  },
  "s28": {
   "plate": true,
